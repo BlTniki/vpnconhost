@@ -76,7 +76,7 @@ else:
         return stdout
 
 
-    def removePeerFromVPN(peerId=str, peerPublicKey=str):
+    def removePeerFromVPNandDeleteConf(peerId=str, peerPublicKey=str):
         cmd = f'sudo wg set wg0 peer {peerPublicKey} remove\nrm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}keys/{peerId}Public.key\nsudo rm {workDir}keys/{peerId}Private.key'
         with open(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 'w') as f:
             f.write(f'#!/bin/bash\nexport PATH="/usr/bin:$PATH"\n{cmd}')
