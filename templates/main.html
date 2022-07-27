@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Main page</title>
+</head>
+<body>
+<h2>Есть два стула...</h2>
+Если надо создать новое подключение, то выбирай верхний. Если хочешь уточнить существующие, то нижний.
+<form method="get" action="/main/Create_new_user">
+    <button type="submit">Создать нового юзера</button>
+</form>
+<form method="get" action="/main/Find_exist_user">
+    <button type="submit">Уточнить данные юзерa</button>
+</form>
+
+<h2></h2>
+
+<form method="get" action="/main/Admin">
+    <button type="submit">Админка</button>
+</form>
+<!--<h3>Messages2 list</h3>-->
+<!--{% for message in mess %}-->
+<!--<div>{{ message.text }}&nbsp;</div>-->
+<!--{% endfor %}-->
+
+</body>
+</html>

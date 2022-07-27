@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Поиск юзера</title>
+</head>
+<body>
+<form method="post" action="/main/Find_exist_user/find">
+    <input type="text" name="findField">
+    <button type="submit">Поиск</button>
+</form>
+{% if message %}
+    <p>{{ message }}</p>
+{% endif %}
+{% if peer %}
+    <h3>{{client}}</h3>
+    <div>Private key: {{peer["Private key"]}} </div>
+    <div>Public key: {{peer["Public key"]}} </div>
+    <div>Ip address: {{peer["Ip address"]}} </div>
+    <a href="/download_conf/{{client}}">Скачать конфигурационный файл</a>
+{% endif %}
+</body>
+</html>

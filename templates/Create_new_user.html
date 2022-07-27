@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Создаём нового юзера</title>
+</head>
+<body>
+<h3>Создание нового подключения</h3>
+<div>
+    Мой VPN реализуется через wireguard протокол. Но вам не нужно слишком много об этом думать.
+</div>
+<div>
+    Суть в том, что для подключения к моему VPN, вам необходимо установить wireguard.
+</div>
+<div>
+    Он есть в официальных маркетах iOS и android, есть для Windows, Linux, Mac (можно даже на роутер повесить через костыли).
+</div>
+<div>
+    Для подключения вам нужен конфиг файл, который вы импортируете в своё wireguard приложение.
+</div>
+<div>
+    Поэтому, мы прям щас его создадим. Заполни данные внизу.
+</div>
+<div>
+    Хотя вы также можете настроить самостоятельно, надеюсь я дам здесь все нужные данные.
+</div>
+
+<h4>
+    server public key = fNMyUeM9jLy0CRJ209mBW65mXm7RM0QY6JF0SIH+2gE=
+</h4>
+<h4>
+    server endpoint 45.10.40.206:51820
+</h4>
+<form method="post" action="/main/Create_new_user/create">
+    <div>
+        Придумай ник(Ты по нему потом сможешь найти свой конфиг файл, так что тут без хуйни пжлст)
+    </div>
+    <div>
+        (ник дожен состоять ТОЛЬКО из букв и цифр, без пробелов спец знаков и т.д.):
+    </div>
+    <input type="text" name="clientName">
+
+    <div>
+        Выбери свой ip(нужно указать число после последней точки от 2 до 254):
+    </div>
+    10.8.0.<input type="text" name="clientIp">
+    <div>
+        Ник или ip может быть занят, тогда придётся поменять их.
+    </div>
+    <div>
+        <button type="submit">Создать</button>
+    </div>
+</form>
+<div>{{message}}</div>
+{% if peer %}
+    <h3>{{client}}</h3>
+    <div>Private key: {{peer["Private key"]}} </div>
+    <div>Public key: {{peer["Public key"]}} </div>
+    <div>Ip address: {{peer["Ip address"]}} </div>
+    <a href="/download_conf/{{client}}">Скачать конфигурационный файл</a>
+{% endif %}
+</body>
+</html>

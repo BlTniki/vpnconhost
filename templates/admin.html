@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Adminka</title>
+</head>
+<body>
+{% for peer in peers %}
+    <h3>{{peer}}</h3>
+    <div>Private key: {{peers[peer]["Private key"]}} </div>
+    <div>Public key: {{peers[peer]["Public key"]}} </div>
+    <div>Ip address: {{peers[peer]["Ip address"]}} </div>
+    <a href="/download_conf/{{peer}}">Скачать конфигурационный файл</a>
+{% endfor %}
+</body>
+</html>
+
+<!--<h3>Messages2 list</h3>-->
+<!--{% for message in mess %}-->
+<!--<div>{{ message.text }}&nbsp;</div>-->
+<!--{% endfor %}-->
