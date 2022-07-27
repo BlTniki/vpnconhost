@@ -52,7 +52,7 @@ else:
         return runTmpScript(peerId, cmd)
 
 
-    def removePeerFromVPNandDeleteConf(peerId=str, peerPublicKey=str):
+    def deleteConfAndKeys(peerId=str):
         cmd = f'sudo rm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}keys/{peerId}Public.key\nsudo rm {workDir}keys/{peerId}Private.key'
         runTmpScript(peerId, cmd)
 
