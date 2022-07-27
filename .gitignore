@@ -6,3 +6,4 @@ __pycache__/
 peers.json
 VPNcon.log
 appconf.txt
+venv
