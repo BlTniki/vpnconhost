@@ -32,29 +32,13 @@ if testMode:
 
 else:
     def createPeerPrivateKey(peerId=str):
-        genPrivateCmd = f'sudo wg genkey |  tee {workDir}/keys/{peerId}Private.key'
-        with open(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 'w') as f:
-            f.write(f'#!/bin/bash\nexport PATH="/usr/bin/:$PATH"\n{genPrivateCmd}')
-        os.chmod(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 0o777)
-        try:
-            stdout = subprocess.check_output(f'{workDir}tmpScripts/{peerId}TmpScript.sh', shell=True, stderr=subprocess.STDOUT).decode('utf-8')
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-
-        return stdout[:-1]
+        cmd = f'sudo wg genkey |  tee {workDir}/keys/{peerId}Private.key'
+        return runTmpScript(peerId, cmd)[:-1]
 
 
     def createPeerPublicKey(peerId=str):
-        genPublicCmd = f'sudo cat {workDir}keys/{peerId}Private.key | wg pubkey | tee {workDir}keys/{peerId}Public.key'
-        with open(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 'w') as f:
-            f.write(f'#!/bin/bash\nexport PATH="/usr/bin/:$PATH"\n{genPublicCmd}')
-        os.chmod(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 0o777)
-        try:
-            stdout = subprocess.check_output(f'{workDir}tmpScripts/{peerId}TmpScript.sh', shell=True, stderr=subprocess.STDOUT).decode('utf-8')
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-
-        return stdout[:-1]
+        cmd = f'sudo cat {workDir}keys/{peerId}Private.key | wg pubkey | tee {workDir}keys/{peerId}Public.key'
+        return runTmpScript(peerId, cmd)[:-1]
 
 
     def createPeerConf(peerId=str, peerIp=str, peerPrivateKey=str):
@@ -65,19 +49,22 @@ else:
 
     def addPeerToVPN(peerId=str, peerIp=str, peerPublicKey=str):
         cmd = f'sudo wg set wg0 peer {peerPublicKey} allowed-ips {peerIp}/32'
-        with open(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 'w') as f:
-            f.write(f'#!/bin/bash\nexport PATH="/usr/bin:$PATH"\n{cmd}')
-        os.chmod(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 0o777)
-        try:
-            stdout = subprocess.check_output(f'{workDir}tmpScripts/{peerId}TmpScript.sh', shell=True, stderr=subprocess.STDOUT).decode('utf-8')
-        except subprocess.CalledProcessError as e:
-            raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-
-        return stdout
+        return runTmpScript(peerId, cmd)
 
 
     def removePeerFromVPNandDeleteConf(peerId=str, peerPublicKey=str):
-        cmd = f'sudo wg set wg0 peer {peerPublicKey} remove\nrm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}keys/{peerId}Public.key\nsudo rm {workDir}keys/{peerId}Private.key'
+        cmd = f'sudo rm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}keys/{peerId}Public.key\nsudo rm {workDir}keys/{peerId}Private.key'
+        runTmpScript(peerId, cmd)
+
+        return True
+
+    def removePeerFromVPN(peerId=str, peerPublicKey=str):
+        cmd = f'sudo wg set wg0 peer {peerPublicKey} remove'
+        runTmpScript(peerId, cmd)
+
+        return True
+
+    def runTmpScript(peerId, cmd):
         with open(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 'w') as f:
             f.write(f'#!/bin/bash\nexport PATH="/usr/bin:$PATH"\n{cmd}')
         os.chmod(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 0o777)
@@ -86,9 +73,7 @@ else:
                                              stderr=subprocess.STDOUT).decode('utf-8')
         except subprocess.CalledProcessError as e:
             raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
-
-        return True
-
+        return stdout
 
 if __name__ == "__main__":
     name = 'test'
