@@ -3,3 +3,6 @@ __pycache__/
 *.key
 *.conf
 *.sh
+peers.json
+VPNcon.log
+appconf.txt
