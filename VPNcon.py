@@ -117,8 +117,8 @@ def updatePeer(peerId):
     peerIp = peer["Ip address"]
 
     # Updating allowed-ips and config for this peer
+    Conf.removePeerFromVPNandDeleteConf(peerId, peer['Public key'])
     Conf.createPeerConf(peerId, peerIp, peer['Private key'])
-    Conf.removePeerFromVPN(peerId, peer['Public key'])
     Conf.addPeerToVPN(peerId, peerIp, peer['Public key'])
 
     return jsonify({peerId: peer})
@@ -135,7 +135,7 @@ def deletePeer(peerId):
         e = e.args
         return jsonify({'error': e[0]}), e[1]
 
-    Conf.removePeerFromVPN(peerId, peer['Public key'])
+    Conf.removePeerFromVPNandDeleteConf(peerId, peer['Public key'])
 
     return jsonify({'result': True})
 
