@@ -136,6 +136,7 @@ def deletePeer(peerId):
         return jsonify({'error': e[0]}), e[1]
 
     Conf.removePeerFromVPN(peerId, peer['Public key'])
+    Conf.deleteConfAndKeys(peerId)
 
     return jsonify({'result': True})
 
