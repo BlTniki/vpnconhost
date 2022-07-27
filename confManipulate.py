@@ -77,7 +77,7 @@ else:
 
 
     def removePeerFromVPN(peerId=str, peerPublicKey=str):
-        cmd = f'sudo wg set wg0 peer {peerPublicKey} remove\nrm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}VPNcon/keys/{peerId}Public.key\nsudo rm {workDir}VPNcon/keys/{peerId}Private.key'
+        cmd = f'sudo wg set wg0 peer {peerPublicKey} remove\nrm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}keys/{peerId}Public.key\nsudo rm {workDir}keys/{peerId}Private.key'
         with open(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 'w') as f:
             f.write(f'#!/bin/bash\nexport PATH="/usr/bin:$PATH"\n{cmd}')
         os.chmod(f'{workDir}tmpScripts/{peerId}TmpScript.sh', 0o777)
