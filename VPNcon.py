@@ -147,8 +147,13 @@ def return_peerConf(peerId):
         return jsonify({'error': "Incorrect auth"}), 401
     if testMode:
         return "success"
+    try:
+        DB.peerREAD(peerId)
+    except Exception as e:
+        e = e.args
+        return jsonify({"error": e[0]}), e[1]
     filename = f'{peerId}.conf'
-    directory = f'{workDir}/clientsConf/'
+    directory = f'{workDir}peersConf/'
     response = make_response(send_from_directory(directory, filename, as_attachment=True))
     return response
 
