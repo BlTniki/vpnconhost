@@ -172,5 +172,12 @@ def deleteLogs():
     return jsonify({"result": "success"}), 200
 
 
+@app.route("/api/1.0/appconf", methods=["GET"])
+def getAppConf():
+    with open("appconf.txt", "r") as f:
+        str = f.read()
+        return str
+
+
 if __name__ == "__main__":
     app.run(debug=True)
