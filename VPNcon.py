@@ -165,5 +165,12 @@ def get_logs():
         return str
 
 
+@app.route("/api/1.0/logs", methods=["DELETE"])
+def del_logs():
+    with open("VPNcon.log", "w") as f:
+        None
+    return jsonify({"result": "success"}), 200
+
+
 if __name__ == "__main__":
     app.run(debug=True)
