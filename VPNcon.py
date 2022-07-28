@@ -142,7 +142,7 @@ def deletePeer(peerId):
 
 
 @app.route('/api/1.0/download_conf/<peerId>', methods=['GET'])
-def return_peerConf(peerId):
+def returnPeerConf(peerId):
     if not request.headers.get("Auth") == auth:
         return jsonify({'error': "Incorrect auth"}), 401
     if testMode:
@@ -159,14 +159,14 @@ def return_peerConf(peerId):
 
 
 @app.route("/api/1.0/logs", methods=["GET"])
-def get_logs():
+def getLogs():
     with open("VPNcon.log", "r") as f:
         str = f.read()
         return str
 
 
 @app.route("/api/1.0/logs", methods=["DELETE"])
-def del_logs():
+def deleteLogs():
     with open("VPNcon.log", "w") as f:
         None
     return jsonify({"result": "success"}), 200
