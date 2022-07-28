@@ -160,6 +160,8 @@ def returnPeerConf(peerId):
 
 @app.route("/api/1.0/logs", methods=["GET"])
 def getLogs():
+    if not request.headers.get("Auth") == auth:
+        return jsonify({'error': "Incorrect auth"}), 401
     with open("VPNcon.log", "r") as f:
         str = f.read()
         return str
@@ -167,6 +169,8 @@ def getLogs():
 
 @app.route("/api/1.0/logs", methods=["DELETE"])
 def deleteLogs():
+    if not request.headers.get("Auth") == auth:
+        return jsonify({'error': "Incorrect auth"}), 401
     with open("VPNcon.log", "w") as f:
         None
     return jsonify({"result": "success"}), 200
@@ -174,6 +178,8 @@ def deleteLogs():
 
 @app.route("/api/1.0/appconf", methods=["GET"])
 def getAppConf():
+    if not request.headers.get("Auth") == auth:
+        return jsonify({'error': "Incorrect auth"}), 401
     with open("appconf.txt", "r") as f:
         str = f.read()
         return str
