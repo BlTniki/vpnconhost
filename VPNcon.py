@@ -2,9 +2,11 @@ import confManipulate as Conf
 import DBCRUD as DB
 import CheckIsDataCorrect as Check
 from logging.handlers import WatchedFileHandler
-from flask import Flask, jsonify, request, make_response, send_from_directory
+from flask import Flask, jsonify, request, make_response, send_from_directory, redirect
+from secrets import token_hex as generateToken
 
 app = Flask(__name__)
+validTokens = dict()
 
 with open("appconf.txt") as f:
     auth = f.readline().strip();
@@ -141,21 +143,31 @@ def deletePeer(peerId):
     return jsonify({'result': True})
 
 
-@app.route('/api/1.0/download_conf/<peerId>', methods=['GET'])
-def returnPeerConf(peerId):
-    if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+@app.route('/api/1.0/conf/<token>', methods=['GET'])
+def returnPeerConf(token):
+    if not token in validTokens.keys():
+        return jsonify({'error': "Incorrect token"}), 401
     if testMode:
         return "success"
+    peerId = validTokens.pop(token)
+    filename = f'{peerId}.conf'
+    directory = f'{workDir}peersConf/'
+    response = make_response(send_from_directory(directory, filename, as_attachment=True))
+    return response
+
+
+@app.route('/api/1.0/conf/<peerId>', methods=['POST'])
+def generateTokenForDownloadConfig(peerId):
+    if not request.headers.get("Auth") == auth:
+        return jsonify({'error': "Incorrect auth"}), 401
     try:
         DB.peerREAD(peerId)
     except Exception as e:
         e = e.args
         return jsonify({"error": e[0]}), e[1]
-    filename = f'{peerId}.conf'
-    directory = f'{workDir}peersConf/'
-    response = make_response(send_from_directory(directory, filename, as_attachment=True))
-    return response
+    token = generateToken(32)
+    validTokens[token] = peerId
+    return jsonify({"token": token}), 200
 
 
 @app.route("/api/1.0/logs", methods=["GET"])
