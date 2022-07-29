@@ -44,5 +44,5 @@ def returnPayloadByToken(token):
     try:
         payload = validTokens.pop(token)
         return payload
-    except KeyError as e:
+    except KeyError:
         raise Exception("Wrong token", 400)
