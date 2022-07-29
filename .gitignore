@@ -4,6 +4,7 @@ __pycache__/
 *.conf
 *.sh
 peers.json
+validTokens.json
 VPNcon.log
 appconf.txt
 venv
