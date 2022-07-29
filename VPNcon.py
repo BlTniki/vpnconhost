@@ -2,17 +2,18 @@ import confManipulate as Conf
 import DBCRUD as DB
 import CheckIsDataCorrect as Check
 from logging.handlers import WatchedFileHandler
-from flask import Flask, jsonify, request, make_response, send_from_directory, redirect
+from flask import Flask, jsonify, request, make_response, send_from_directory
+
 from secrets import token_hex as generateToken
 
 app = Flask(__name__)
 validTokens = dict()
 
 with open("appconf.txt") as f:
-    auth = f.readline().strip();
-    workDir = f.readline().strip();
-    ipAddress = f.readline().strip();
-    testMode = True if f.readline().strip() == "YES" else False;
+    auth = f.readline().strip()
+    workDir = f.readline().strip()
+    ipAddress = f.readline().strip()
+    testMode = True if f.readline().strip() == "YES" else False
 
 
 @app.before_first_request
@@ -106,7 +107,7 @@ def updatePeer(peerId):
     peerPublicKey = request.json["peerPublicKey"] if "peerPublicKey" in request.json.keys() else None
 
     # Valid request body only if state not None
-    if ipEnd != None and not Check.isIpEndCorrect(ipEnd):
+    if not ipEnd is None and not Check.isIpEndCorrect(ipEnd):
         return jsonify({'error': 'Wrong peerIp'}), 400
 
     # Updating peer in database
@@ -147,9 +148,9 @@ def deletePeer(peerId):
 def returnPeerConf(token):
     if not token in validTokens.keys():
         return jsonify({'error': "Incorrect token"}), 401
+    peerId = validTokens.pop(token)
     if testMode:
         return "success"
-    peerId = validTokens.pop(token)
     filename = f'{peerId}.conf'
     directory = f'{workDir}peersConf/'
     response = make_response(send_from_directory(directory, filename, as_attachment=True))
@@ -174,27 +175,26 @@ def generateTokenForDownloadConfig(peerId):
 def getLogs():
     if not request.headers.get("Auth") == auth:
         return jsonify({'error': "Incorrect auth"}), 401
-    with open("VPNcon.log", "r") as f:
-        str = f.read()
-        return str
+    with open("VPNcon.log", "r") as file:
+        string = file.read()
+        return string
 
 
 @app.route("/api/1.0/logs", methods=["DELETE"])
 def deleteLogs():
     if not request.headers.get("Auth") == auth:
         return jsonify({'error': "Incorrect auth"}), 401
-    with open("VPNcon.log", "w") as f:
-        None
-    return jsonify({"result": "success"}), 200
+    with open("VPNcon.log", "w") as file:
+        return jsonify({"result": "success"}), 200
 
 
 @app.route("/api/1.0/appconf", methods=["GET"])
 def getAppConf():
     if not request.headers.get("Auth") == auth:
         return jsonify({'error': "Incorrect auth"}), 401
-    with open("appconf.txt", "r") as f:
-        str = f.read()
-        return str
+    with open("appconf.txt", "r") as file:
+        string = file.read()
+        return string
 
 
 if __name__ == "__main__":
