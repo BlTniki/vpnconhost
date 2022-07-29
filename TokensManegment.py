@@ -43,6 +43,7 @@ def returnPayloadByToken(token):
     validTokens = validTokensRead()
     try:
         payload = validTokens.pop(token)
+        validTokensSave(validTokens)
         return payload
     except KeyError:
         raise Exception("Wrong token", 400)
