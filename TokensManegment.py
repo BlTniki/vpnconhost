@@ -42,7 +42,7 @@ def generateTokenForPayload(payload):
 def returnPayloadByToken(token):
     validTokens = validTokensRead()
     try:
-        payload = validTokens[token]
+        payload = validTokens.pop(token)
         return payload
     except KeyError as e:
         raise Exception("Wrong token", 400)
