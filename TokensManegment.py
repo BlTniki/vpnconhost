@@ -1,5 +1,5 @@
 import json
-from secrets import token_hex as generateToken
+from secrets import token_urlsafe as generateToken
 
 try:
     f = open('validTokens.json')
