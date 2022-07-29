@@ -1,13 +1,11 @@
 import confManipulate as Conf
 import DBCRUD as DB
 import CheckIsDataCorrect as Check
+import TokensManegment
 from logging.handlers import WatchedFileHandler
 from flask import Flask, jsonify, request, make_response, send_from_directory
 
-from secrets import token_hex as generateToken
-
 app = Flask(__name__)
-validTokens = dict()
 
 with open("appconf.txt") as f:
     auth = f.readline().strip()
@@ -146,9 +144,11 @@ def deletePeer(peerId):
 
 @app.route('/api/1.0/conf/<token>', methods=['GET'])
 def returnPeerConf(token):
-    if not token in validTokens.keys():
-        return jsonify({'error': "Incorrect token"}), 401
-    peerId = validTokens.pop(token)
+    try:
+        peerId = TokensManegment.returnPayloadByToken(token)
+    except Exception as e:
+        e = e.args
+        return jsonify({"error": e[0]}), e[1]
     if testMode:
         return "success"
     filename = f'{peerId}.conf'
@@ -163,11 +163,11 @@ def generateTokenForDownloadConfig(peerId):
         return jsonify({'error': "Incorrect auth"}), 401
     try:
         DB.peerREAD(peerId)
+        token = TokensManegment.generateTokenForPayload(peerId)
     except Exception as e:
         e = e.args
         return jsonify({"error": e[0]}), e[1]
-    token = generateToken(32)
-    validTokens[token] = peerId
+
     return jsonify({"token": token}), 200
 
 
