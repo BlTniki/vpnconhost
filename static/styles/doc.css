@@ -6,17 +6,12 @@ img {
     padding-left: 2em;
 }
 
+bold {
+    font-weight: bold;
+}
+
 body .mainTitle {
     font-size: 3em;
-    font-weight: bold;
-}
-
-body .minorTitle {
-    font-size: 1.5em;
-    font-weight: bold;
-}
-
-bold {
     font-weight: bold;
 }
 
@@ -31,9 +26,6 @@ body .appConfText {
     padding: 1em;
 }
 
-.header{
-    white-space: nowrap;
-}
 
 .navbar {
     white-space: nowrap;
