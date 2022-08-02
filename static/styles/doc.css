@@ -1,0 +1,56 @@
+div {
+    white-space: pre-line;
+}
+
+img {
+    padding-left: 2em;
+}
+
+body .mainTitle {
+    font-size: 3em;
+    font-weight: bold;
+}
+
+body .minorTitle {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+bold {
+    font-weight: bold;
+}
+
+.text {
+    font-size: 1.2em;
+    padding-left: 1em;
+}
+
+body .appConfText {
+    box-shadow: rgba(3, 102, 214, 0.3) 0px 0px 0px 3px;
+    font-style: italic;
+    padding: 1em;
+}
+
+.header{
+    white-space: nowrap;
+}
+
+.navbar {
+    white-space: nowrap;
+}
+
+.navContentText {
+    white-space: nowrap;
+    font-size: 1.5em;
+    list-style: square outside;
+}
+
+.routeUsage {
+    white-space: nowrap;
+}
+
+.routeUsageHeader {
+
+    font-size: 1.5em;
+    font-weight: bold;
+}

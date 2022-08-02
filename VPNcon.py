@@ -3,7 +3,7 @@ import DBCRUD as DB
 import CheckIsDataCorrect as Check
 import TokensManegment
 from logging.handlers import WatchedFileHandler
-from flask import Flask, jsonify, request, make_response, send_from_directory
+from flask import Flask, jsonify, request, make_response, send_from_directory, render_template
 
 app = Flask(__name__)
 
@@ -195,6 +195,12 @@ def getAppConf():
     with open("appconf.txt", "r") as file:
         string = file.read()
         return string
+
+
+@app.route("/api/1.0/doc", methods=["GET"])
+def getDoc():
+    scroll = request.args.get("scroll")
+    return render_template("doc.html", scroll=scroll)
 
 
 if __name__ == "__main__":

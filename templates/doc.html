@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"  type= "text/css" href="{{ url_for('static',filename='styles/doc.css') }}">
+    <title>vpnconservice documentation</title>
+</head>
+<body>
+{% if scroll %}
+<script>
+    document.location.hash = '#' + '{{ scroll }}';
+</script>
+{% endif %}
+
+<div class="mainTitle">Документация vpnconservice</div>
+<div class="text">    Перед запуском приложения в папке с проектом должен лежать файл appconf.txt
+    в котором построчно должы быть указаны следующие поля:</div>
+
+<div class="appConfText">    Пароль указываемый в заголовке запроса "Auth" : (любая строка)
+    Рабочую дирректорию в которой лежит проект. Пример: /ur/work/dir/ (Обязательно / в конце)
+    Адресс сервера, на котором запускается проет, и порт, который слушает wireguard. Пример: 0.0.0.0:0000
+    Ответ на вопрос: "Запуск в тестовом режиме?(YES/NO)"</div>
+<div>
+
+</div>
+<div class="routeUsage">
+    <div class="routeUsageHeader">Аутентификация</div>
+    <div class="text"> В каждом запросе должен присутствовать ключ "Auth" со значением в виде пароля,
+        который был указан в appconf.</div>
+    <img src="/static/images/AuthExample.jpg">
+</div>
+<div>
+
+</div>
+<div class="navbar">
+    <div class="routeUsageHeader">Доступные пути /api/1.0/:</div>
+    <div class="navContentText">
+        <li><a name="navHref" href="doc?scroll=peers">/api/1.0/peers:</a> (Методы: GET, POST)</li>
+        <li><a name="navHref" href="doc?scroll=peer">/api/1.0/peers/{peerId}:</a> (Методы: GET, PUT, DELETE)</li>
+        <li><a name="navHref" href="doc?scroll=">/api/1.0/conf:{peerId}</a> (Методы: GET, POST)</li>
+        <li><a name="navHref" href="doc?scroll=">/api/1.0/logs:</a> (Методы: GET, DELETE)</li>
+        <li><a name="navHref" href="doc?scroll=">/api/1.0/appconf:</a> (Методы: GET)</li>
+        <li><a name="navHref" href="doc?scroll=">/api/1.0/doc:</a> (Методы: GET)</li>
+    </div>
+</div>
+<div>
+
+</div>
+<div class="routeUsage" id="peers">
+    <div class="routeUsageHeader">/api/1.0/peers:</div>
+
+    <div class="routeUsageHeader">Метод GET:</div>
+    <div class="text">Возвращает список всех пользователей в виде <bold>json</bold> с кодом 200.</div>
+    <img src="/static/images/GETpeersExample.jpg">
+
+    <div class="routeUsageHeader">Метод POST:</div>
+    <div class="text">Создание нового пользователя. В запросе должно присутствовать тело:  </div>
+    <img src="/static/images/POSTpeersExample.jpg">
+    <div class="text"><bold>peerId</bold> должен быть строкой,a также должен содержать исключительно <bold>латиницу и цифры</bold>.</div>
+    <div class="text"><bold>peerIp</bold> должен быть целым числом <bold>от 1 до 254 включительно</bold>.</div>
+    <div class="text">Ответ:</div>
+    <div class="text">При корректном запросе возвращает пира в виде <bold>json</bold> код <bold>200</bold></div>
+    <img src="/static/images/POSTpeersAnswerExample.jpg">
+    <div class="text">При некорректном запросе возвращает ответ в виде <bold>json</bold> код <bold>4ХХ</bold></div>
+    <img src="/static/images/POSTpeersAnswerBADExample.jpg">
+</div>
+<div>
+
+</div>
+<div class="routeUsage" id="peer">
+    <div class="routeUsageHeader">/api/1.0/peers/{peerId}:</div>
+    <div class="routeUsageHeader">Метод GET:</div>
+    <div class="text">Возвращает список всех пользователей в виде <bold>json</bold> с кодом 200.</div>
+    <img src="/static/images/GETpeersExample.jpg">
+
+    <div class="routeUsageHeader">Метод POST:</div>
+    <div class="text">Создание нового пользователя. В запросе должно присутствовать тело:  </div>
+    <img src="/static/images/POSTpeersExample.jpg">
+    <div class="text"><bold>peerId</bold> должен быть строкой,a также должен содержать исключительно <bold>латиницу и цифры</bold>.</div>
+    <div class="text"><bold>peerIp</bold> должен быть целым числом <bold>от 1 до 254 включительно</bold>.</div>
+    <div class="text">Ответ:</div>
+    <div class="text">При корректном запросе возвращает пира в виде <bold>json</bold> код <bold>200</bold></div>
+    <img src="/static/images/POSTpeersAnswerExample.jpg">
+    <div class="text">При некорректном запросе возвращает ответ в виде <bold>json</bold> код <bold>4ХХ</bold></div>
+    <img src="/static/images/POSTpeersAnswerBADExample.jpg">
+</div>
+
+
+</body>
+
+</html>
