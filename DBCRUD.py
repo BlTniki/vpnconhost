@@ -8,9 +8,10 @@ except IOError as e:
     with open("peers.json", "w") as f:
         peers = {
             "foo": {
-                "Private key": "bar",
-                "Public key": "bar",
-                "Ip address": "kek"
+                "peerId": "foo",
+                "peerIp": "0.0.0.0",
+                "peerPrivateKey": "Private_bar",
+                "peerPublicKey": "Public_bar"
             }
         }
         json.dump(peers, f, indent=4)
@@ -21,7 +22,7 @@ else:
 
 
 
-def saveDatabase(peers):
+def saveDatabase(peers: dict):
     try:
         with open("peers.json", "w") as f:
             json.dump(peers, f, indent=4)
@@ -40,7 +41,7 @@ def allPeersREAD():
 
 
 # return existing peer in database or raise exception
-def peerREAD(peerId):
+def peerREAD(peerId: str):
     peers = allPeersREAD()
     try:
         peer = peers[peerId]
@@ -50,44 +51,38 @@ def peerREAD(peerId):
 
 
 # create new peer in database
-def peerCREATE(peerId, ipEnd, peerPrivateKey, peerPublicKey):
+def peerCREATE(peer: dict):
     peers = allPeersREAD()
 
-    if peerId in peers.keys():
+    if peer["peerId"] in peers.keys():
         raise Exception("This peerId has already taken", 400)
 
-
-    ipEnd = int(ipEnd)
-    peerIp = f'10.8.0.{ipEnd}'
-    for key in peers.keys():
-        if peers[key]['Ip address'] == peerIp:
+    for key in peers:
+        if peers[key]['peerIp'] == peer["peerIp"]:
             raise Exception("This peerIp has already taken", 400)
 
-    peers[peerId] = {'Private key': f'{peerPrivateKey}', 'Public key': f'{peerPublicKey}',
-                     'Ip address': peerIp}
-
+    peers[peer["peerId"]] = peer
     saveDatabase(peers)
-    return peers[peerId]
+    return peer
 
 
 # update peer
-def peerUPDATE(peerId, ipEnd=None, peerPrivateKey=None, peerPublicKey=None):
+def peerUPDATE(newPeer: dict):
     peers = allPeersREAD()
-    peer = peerREAD(peerId)
+    oldPeer = peerREAD(newPeer["peerId"])
 
-    if ipEnd:
-        peerIp = f'10.8.0.{ipEnd}'
-        for key in peers.keys():
-            if peers[key]['Ip address'] == peerIp:
+    if newPeer["peerIp"] is not None:
+        for key in peers:
+            if peers[key]['peerIp'] == newPeer["peerIp"]:
                 raise Exception("This peerIp has already taken", 400)
-        peer["Ip address"] = peerIp
+        oldPeer["peerIp"] = newPeer["peerIp"]
 
-    peers[peerId] = peer
+    peers[oldPeer["peerId"]] = oldPeer
     saveDatabase(peers)
-    return peers[peerId]
+    return oldPeer
 
 
-def peerDELETE(peerId):
+def peerDELETE(peerId: str):
     peers = allPeersREAD()
     try:
         peer = peers.pop(peerId)

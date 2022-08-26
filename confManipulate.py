@@ -30,6 +30,10 @@ if testMode:
         return True
 
 
+    def deleteConfAndKeys(peerId=str):
+        return True
+
+
 else:
     def createPeerPrivateKey(peerId=str):
         cmd = f'sudo wg genkey |  tee {workDir}/keys/{peerId}Private.key'

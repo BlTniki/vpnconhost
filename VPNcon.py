@@ -1,9 +1,12 @@
+import json
+
+import Model
 import confManipulate as Conf
 import DBCRUD as DB
 import CheckIsDataCorrect as Check
 import TokensManegment
 from logging.handlers import WatchedFileHandler
-from flask import Flask, jsonify, request, make_response, send_from_directory, render_template
+from flask import Flask, jsonify, request, make_response, send_from_directory, render_template, redirect, url_for, Response
 
 app = Flask(__name__)
 
@@ -13,35 +16,44 @@ with open("appconf.txt") as f:
     ipAddress = f.readline().strip()
     testMode = True if f.readline().strip() == "YES" else False
 
+# Setup logging
+try:
+    handler = WatchedFileHandler(f"{workDir}VPNcon.log")
+    app.logger.addHandler(handler)
+    print(f"Logging setupted")
+except Exception as e:
+    print(e)
+    print("im in windows?")
 
-@app.before_first_request
-def setup_logging():
-    # Setup logging
-    try:
-        handler = WatchedFileHandler(f"{workDir}VPNcon.log")
-        app.logger.addHandler(handler)
-        print(f"Logging setupted")
-    except Exception as e:
-        print(e)
-        print("im in windows?")
+
+@app.route("/test")
+def test():
+    print(request.json)
+    return jsonify(request.json)
+
+
+@app.route('/')
+def redirectToDocs():
+    return redirect(url_for("getDoc"))
 
 
 @app.route('/api/1.0/peers', methods=['GET'])
 def getAllPeers():
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
     try:
         peers = DB.allPeersREAD()
-        return jsonify(peers), 200
     except Exception as e:
         e = e.args
-        return jsonify({'error': e[0]}), e[1]
+        return e[0], e[1]
+
+    return Response(json.dumps([peers[key] for key in peers]), mimetype="application/json")
 
 
 @app.route('/api/1.0/peers/<peerId>', methods=['GET'])
 def getPeer(peerId):
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
 
     try:
         peer = DB.peerREAD(peerId)
@@ -49,97 +61,95 @@ def getPeer(peerId):
         e = e.args
         return jsonify({'error': e[0]}), e[1]
 
-    return jsonify({peerId: peer}), 200
+    return jsonify(peer), 200
 
 
 @app.route('/api/1.0/peers', methods=['POST'])
 def postPeer():
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
 
     # Checking for json body
     if not request.headers.get("Content-Type") == "application/json":
-        return jsonify({'error': 'Bad request'}), 400
+        return 'Bad request', 400
+    peer = request.json
 
     # Valid request body
-    if not "peerId" in request.json.keys() or not "peerIp" in request.json.keys():
+    if not "peerId" in peer.keys() or not "peerIp" in peer.keys():
         return jsonify({'error': 'Bad request'}), 400
-    peerId = request.json["peerId"]
-    ipEnd = request.json["peerIp"]
+
+    peerId = peer["peerId"]
+    peerIp = peer["peerIp"]
+
     if not Check.isPeerIdCorrect(peerId):
-        return jsonify({'error': 'Wrong peerId'}), 400
-    if not Check.isIpEndCorrect(ipEnd):
-        return jsonify({'error': 'Wrong peerIp'}), 400
+        return 'Wrong peerId', 400
+    if not Check.isPeerIpCorrect(peerIp):
+        return 'Wrong peerIp', 400
 
     # generate peer's keys
-    peerPrivateKey = Conf.createPeerPrivateKey(peerId)
-    peerPublicKey = Conf.createPeerPublicKey(peerId)
+    peer["peerPrivateKey"] = Conf.createPeerPrivateKey(peerId)
+    peer["peerPublicKey"] = Conf.createPeerPublicKey(peerId)
 
     # add peer to database
     try:
-        peer = DB.peerCREATE(peerId, ipEnd, peerPrivateKey, peerPublicKey)
+        DB.peerCREATE(peer)
     except Exception as e:
         e = e.args
-        return jsonify({'error': e[0]}), e[1]
+        return e[0], e[1]
 
     # generating peer conf file and adding to wireguard
-    peerIp = peer["Ip address"]
-    Conf.createPeerConf(peerId, peerIp, peerPrivateKey)
-    Conf.addPeerToVPN(peerId, peerIp, peerPublicKey)
+    Conf.createPeerConf(peerId, peerIp, peer["peerPrivateKey"])
+    Conf.addPeerToVPN(peerId, peerIp, peer["peerPublicKey"])
 
-    return jsonify({peerId: peer}), 200
+    return jsonify(peer), 200
 
 
 @app.route('/api/1.0/peers/<peerId>', methods=['PUT'])
 def updatePeer(peerId):
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
 
     # Checking for json body
     if not request.headers.get("Content-Type") == "application/json":
-        return jsonify({'error': 'Bad request'}), 400
+        return 'Bad request', 400
+    peer = request.json
 
-    # Getting new states for peer from request body if in body new state
-    ipEnd = request.json["peerIp"] if "peerIp" in request.json.keys() else None
-    peerPrivateKey = request.json["peerPrivateKey"] if "peerPrivateKey" in request.json.keys() else None
-    peerPublicKey = request.json["peerPublicKey"] if "peerPublicKey" in request.json.keys() else None
-
-    # Valid request body only if state not None
-    if not ipEnd is None and not Check.isIpEndCorrect(ipEnd):
-        return jsonify({'error': 'Wrong peerIp'}), 400
+    if not Check.isPeerIpCorrect(peer["peerIp"]):
+        return 'Wrong peerIp', 400
 
     # Updating peer in database
     try:
-        peer = DB.peerUPDATE(peerId, ipEnd=ipEnd, peerPrivateKey=peerPrivateKey, peerPublicKey=peerPublicKey)
+        peer = DB.peerUPDATE(peer)
     except Exception as e:
         e = e.args
-        return jsonify({'error': e[0]}), e[1]
+        return e[0], e[1]
 
-    peerIp = peer["Ip address"]
+    peerIp = peer["peerIp"]
 
     # Updating allowed-ips and config for this peer
-    Conf.removePeerFromVPN(peerId, peer['Public key'])
-    Conf.createPeerConf(peerId, peerIp, peer['Private key'])
-    Conf.addPeerToVPN(peerId, peerIp, peer['Public key'])
+    Conf.removePeerFromVPN(peerId, peer['peerPublicKey'])
+    Conf.createPeerConf(peerId, peerIp, peer['peerPublicKey'])
+    Conf.addPeerToVPN(peerId, peerIp, peer['peerPrivateKey'])
 
-    return jsonify({peerId: peer})
+    return jsonify(peer), 200
 
 
 @app.route('/api/1.0/peers/<peerId>', methods=['DELETE'])
 def deletePeer(peerId):
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
+
     # Deleting peer from database
     try:
         peer = DB.peerDELETE(peerId)
     except Exception as e:
         e = e.args
-        return jsonify({'error': e[0]}), e[1]
+        return e[0], e[1]
 
-    Conf.removePeerFromVPN(peerId, peer['Public key'])
+    Conf.removePeerFromVPN(peerId, peer['peerPublicKey'])
     Conf.deleteConfAndKeys(peerId)
 
-    return jsonify({'result': True})
+    return "Success", 200
 
 
 @app.route('/api/1.0/conf/<token>', methods=['GET'])
@@ -148,9 +158,9 @@ def returnPeerConf(token):
         peerId = TokensManegment.returnPayloadByToken(token)
     except Exception as e:
         e = e.args
-        return jsonify({"error": e[0]}), e[1]
+        return e[0], e[1]
     if testMode:
-        return "success"
+        return "Success"
     filename = f'{peerId}.conf'
     directory = f'{workDir}peersConf/'
     response = make_response(send_from_directory(directory, filename, as_attachment=True))
@@ -160,13 +170,13 @@ def returnPeerConf(token):
 @app.route('/api/1.0/conf/<peerId>', methods=['POST'])
 def generateTokenForDownloadConfig(peerId):
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
     try:
         DB.peerREAD(peerId)
         token = TokensManegment.generateTokenForPayload(peerId)
     except Exception as e:
         e = e.args
-        return jsonify({"error": e[0]}), e[1]
+        return e[0], e[1]
 
     return jsonify({"token": token}), 200
 
@@ -174,7 +184,7 @@ def generateTokenForDownloadConfig(peerId):
 @app.route("/api/1.0/logs", methods=["GET"])
 def getLogs():
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
     with open("VPNcon.log", "r") as file:
         string = file.read()
         return string
@@ -183,15 +193,15 @@ def getLogs():
 @app.route("/api/1.0/logs", methods=["DELETE"])
 def deleteLogs():
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
     with open("VPNcon.log", "w") as file:
-        return jsonify({"result": "success"}), 200
+        return "Success", 200
 
 
 @app.route("/api/1.0/appconf", methods=["GET"])
 def getAppConf():
     if not request.headers.get("Auth") == auth:
-        return jsonify({'error': "Incorrect auth"}), 401
+        return "Incorrect auth", 401
     with open("appconf.txt", "r") as file:
         string = file.read()
         return string
