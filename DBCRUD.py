@@ -71,7 +71,7 @@ def peerUPDATE(newPeer: dict):
     peers = allPeersREAD()
     oldPeer = peerREAD(newPeer["peerId"])
 
-    if newPeer["peerIp"] is not None:
+    if "peerIp" in newPeer and newPeer["peerIp"] is not None:
         for key in peers:
             if peers[key]['peerIp'] == newPeer["peerIp"]:
                 raise Exception("This peerIp has already taken", 400)

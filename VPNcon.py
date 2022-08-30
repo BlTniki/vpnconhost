@@ -112,7 +112,7 @@ def updatePeer():
         return 'Bad request', 400
     peer = request.json
     # valid peerIp if we have one
-    if peer["peerIp"] and not Check.isPeerIpCorrect(peer["peerIp"]):
+    if "peerIp" in peer and peer["peerIp"] and not Check.isPeerIpCorrect(peer["peerIp"]):
         return 'Wrong peerIp', 400
 
     # Updating peer in database
