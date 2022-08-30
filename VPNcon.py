@@ -108,11 +108,11 @@ def updatePeer(peerId):
         return "Incorrect auth", 401
 
     # Checking for json body
-    if not request.headers.get("Content-Type") == "application/json":
+    if not request.headers.get("Content-Type") == "application/json" or len(request.json) is 0:
         return 'Bad request', 400
     peer = request.json
-
-    if not Check.isPeerIpCorrect(peer["peerIp"]):
+    # valid peerIp if we have one
+    if peer["peerIp"] and not Check.isPeerIpCorrect(peer["peerIp"]):
         return 'Wrong peerIp', 400
 
     # Updating peer in database
