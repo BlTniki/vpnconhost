@@ -102,8 +102,8 @@ def postPeer():
     return jsonify(peer), 200
 
 
-@app.route('/api/1.0/peers/<peerId>', methods=['PUT'])
-def updatePeer(peerId):
+@app.route('/api/1.0/peers', methods=['PUT'])
+def updatePeer():
     if not request.headers.get("Auth") == auth:
         return "Incorrect auth", 401
 
