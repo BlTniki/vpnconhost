@@ -177,6 +177,20 @@ def generateTokenForDownloadConfig(peerId):
         e = e.args
         return e[0], e[1]
 
+    return token, 200
+
+
+@app.route('/api/1.0/conf/<peerId>', methods=['POST'])
+def generateTokenForDownloadConfig(peerId):
+    if not request.headers.get("Auth") == auth:
+        return "Incorrect auth", 401
+    try:
+        DB.peerREAD(peerId)
+        token = TokensManegment.generateTokenForPayload(peerId)
+    except Exception as e:
+        e = e.args
+        return e[0], e[1]
+
     return jsonify({"token": token}), 200
 
 
