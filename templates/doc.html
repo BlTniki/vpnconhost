@@ -36,8 +36,8 @@
 <div class="navbar">
     <div class="routeUsageHeader">Доступные пути /api/1.0/:</div>
     <div class="navContentText">
-        <li><a name="navHref" href="doc?scroll=peers">/api/1.0/peers:</a> (Методы: GET, POST)</li>
-        <li><a name="navHref" href="doc?scroll=peer">/api/1.0/peers/{peerId}:</a> (Методы: GET, PUT, DELETE)</li>
+        <li><a name="navHref" href="doc?scroll=peers">/api/1.0/peers:</a> (Методы: GET, POST, PUT)</li>
+        <li><a name="navHref" href="doc?scroll=peer">/api/1.0/peers/{peerId}:</a> (Методы: GET, DELETE)</li>
         <li><a name="navHref" href="doc?scroll=conf">/api/1.0/conf:{peerId}</a> (Методы: GET, POST)</li>
         <li><a name="navHref" href="doc?scroll=">/api/1.0/logs:</a> (Методы: GET, DELETE)</li>
         <li><a name="navHref" href="doc?scroll=">/api/1.0/appconf:</a> (Методы: GET)</li>
@@ -51,18 +51,29 @@
     <div class="routeUsageHeader">/api/1.0/peers:</div>
 
     <div class="routeUsageHeader">Метод GET:</div>
-    <div class="text">Возвращает список всех пиров в виде <bold>json</bold> с кодом 200.</div>
+    <div class="text">Возвращает список всех пиров в виде <bold>списка json</bold> с кодом 200.</div>
     <img src="/static/images/GETpeersExample.jpg">
 
     <div class="routeUsageHeader">Метод POST:</div>
     <div class="text">Создание нового пира. В запросе должно присутствовать тело:  </div>
     <img src="/static/images/POSTpeersExample.jpg">
-    <div class="text"><bold>peerId</bold> должен быть строкой,a также должен содержать исключительно <bold>латиницу и цифры</bold>.</div>
-    <div class="text"><bold>peerIp</bold> должен быть целым числом <bold>от 1 до 254 включительно</bold>.</div>
+    <div class="text"><bold>peerId</bold> должен быть строкой вида: <bold>xxxxx_yyy</bold>, где: х – латиницу, у – цифры.</div>
+    <div class="text"><bold>peerIp</bold> должен быть строкой вида: <bold>10.8.0.yyy</bold>где: у – цифры..</div>
     <div class="text">Ответ:</div>
     <div class="text">При корректном запросе возвращает пира в виде <bold>json</bold> код <bold>200</bold></div>
     <img src="/static/images/POSTpeersAnswerExample.jpg">
-    <div class="text">При некорректном запросе возвращает ответ в виде <bold>json</bold> код <bold>4ХХ</bold></div>
+    <div class="text">При некорректном запросе возвращает ответ в виде <bold>string</bold> код <bold>4ХХ</bold></div>
+    <img src="/static/images/POSTpeersAnswerBADExample.jpg">
+
+    <div class="routeUsageHeader">Метод PUT:</div>
+    <div class="text">Изменение полей пира. В запросе должно присутствовать тело,
+        оно не может быть пустым и должно содержать <bold>peerId</bold>:  </div>
+    <img src="/static/images/PUTpeerBODYExample.jpg">
+    <div class="text"><bold>peerIp</bold> должен быть строкой вида: <bold>10.8.0.yyy</bold>где: у – цифры..</div>
+    <div class="text">Ответ:</div>
+    <div class="text">При корректном запросе возвращает пира с новыми полями в виде <bold>json</bold> код <bold>200</bold></div>
+    <img src="/static/images/PUTpeerExample.jpg">
+    <div class="text">При некорректном запросе возвращает ответ в виде <bold>string</bold> код <bold>4ХХ</bold></div>
     <img src="/static/images/POSTpeersAnswerBADExample.jpg">
 </div>
 <div>
@@ -75,25 +86,14 @@
     <div class="routeUsageHeader">Метод GET:</div>
     <div class="text">Возвращает пира в виде <bold>json</bold> с кодом 200.</div>
     <img src="/static/images/GETpeerExample.jpg">
-    <div class="text">Иначе возвращает ошибку в виде <bold>json</bold> с кодом <bold>4XX</bold>.</div>
+    <div class="text">При некорректном запросе возвращает ответ в виде <bold>string</bold> код <bold>4ХХ</bold></div>
     <img src="/static/images/GETpeerBADExample.jpg">
-
-    <div class="routeUsageHeader">Метод PUT:</div>
-    <div class="text">Изменение полей пира. В запросе должно присутствовать тело,
-        оно может быть пустым или содержать <bold>peerIp</bold>:  </div>
-    <img src="/static/images/PUTpeerBODYExample.jpg">
-    <div class="text"><bold>peerIp</bold> должен быть целым числом <bold>от 1 до 254 включительно</bold>.</div>
-    <div class="text">Ответ:</div>
-    <div class="text">При корректном запросе возвращает пира с новыми полями в виде <bold>json</bold> код <bold>200</bold></div>
-    <img src="/static/images/PUTpeerExample.jpg">
-    <div class="text">При некорректном запросе возвращает ответ в виде <bold>json</bold> код <bold>4ХХ</bold></div>
-    <img src="/static/images/POSTpeersAnswerBADExample.jpg">
 
     <div class="routeUsageHeader">Метод DELETE:</div>
     <div class="text">Удаление пользователя. Запрос не требует тела, достаточно peerId в url.
-    Если такой пользователь есть, возвращает ответ в виде <bold>json</bold> с кодом 200.</div>
+    Если такой пользователь есть, возвращает ответ в виде <bold>string</bold> с кодом 200.</div>
     <img src="/static/images/DELETEpeerExample.jpg">
-    <div class="text">Иначе возвращает ошибку в виде <bold>json</bold> с кодом <bold>4XX</bold>.</div>
+    <div class="text">Иначе возвращает ошибку в виде <bold>string</bold> с кодом <bold>4XX</bold>.</div>
     <img src="/static/images/GETpeerBADExample.jpg">
 </div>
 <div>
@@ -111,15 +111,15 @@
         Таким образом, вы можете перенаправлять пользователя напрямую на сервер по ссылке для скачивания файла.
         Ответ в виде <bold>файла</bold> с кодом 200.</div>
     <img src="/static/images/GETconfExample.jpg">
-    <div class="text">Иначе возвращает ошибку в виде <bold>json</bold> с кодом <bold>4XX</bold>.</div>
+    <div class="text">Иначе возвращает ошибку в виде <bold>string</bold> с кодом <bold>4XX</bold>.</div>
     <img src="/static/images/GETconfBADExample.jpg">
 
     <div class="routeUsageHeader">Метод POST:</div>
     <div class="text">Возвращает токен для скачивания конфигурационного файла для клиета wireguard.
         Подробнее про токен можно узнать в методе <bold>GET</bold>.
-        Ответ в виде <bold>json</bold> с кодом 200.</div>
+        Ответ в виде <bold>string</bold> с кодом 200.</div>
     <img src="/static/images/POSTconfExample.jpg">
-    <div class="text">Иначе возвращает ошибку в виде <bold>json</bold> с кодом <bold>4XX</bold>.</div>
+    <div class="text">Иначе возвращает ошибку в виде <bold>string</bold> с кодом <bold>4XX</bold>.</div>
     <img src="/static/images/GETpeerBADExample.jpg">
 
 </div>
