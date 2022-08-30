@@ -1,6 +1,4 @@
 import json
-
-import Model
 import confManipulate as Conf
 import DBCRUD as DB
 import CheckIsDataCorrect as Check
@@ -59,7 +57,7 @@ def getPeer(peerId):
         peer = DB.peerREAD(peerId)
     except Exception as e:
         e = e.args
-        return jsonify({'error': e[0]}), e[1]
+        return e[0], e[1]
 
     return jsonify(peer), 200
 
