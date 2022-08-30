@@ -122,6 +122,7 @@ def updatePeer():
         e = e.args
         return e[0], e[1]
 
+    peerId = peer["peerId"]
     peerIp = peer["peerIp"]
 
     # Updating allowed-ips and config for this peer
