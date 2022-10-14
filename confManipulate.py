@@ -6,6 +6,10 @@ with open("appconf.txt") as f:
     workDir = f.readline().strip();
     ipAddress = f.readline().strip();
     testMode = True if f.readline().strip() == "YES" else False;
+    sudoCmd = f.readline().strip() + " ";
+    dns = f.readline().strip("\n");
+    serverPubKey = f.readline().strip("\n");
+
 
 
 if testMode:
@@ -36,34 +40,34 @@ if testMode:
 
 else:
     def createPeerPrivateKey(peerId=str):
-        cmd = f'sudo wg genkey |  tee {workDir}/keys/{peerId}Private.key'
+        cmd = f'{sudoCmd}wg genkey |  tee {workDir}/keys/{peerId}Private.key'
         return runTmpScript(peerId, cmd)[:-1]
 
 
     def createPeerPublicKey(peerId=str):
-        cmd = f'sudo cat {workDir}keys/{peerId}Private.key | wg pubkey | tee {workDir}keys/{peerId}Public.key'
+        cmd = f'{sudoCmd}cat {workDir}keys/{peerId}Private.key | wg pubkey | tee {workDir}keys/{peerId}Public.key'
         return runTmpScript(peerId, cmd)[:-1]
 
 
     def createPeerConf(peerId=str, peerIp=str, peerPrivateKey=str):
-        str = f"[Interface]\nPrivateKey = {peerPrivateKey}\nAddress = {peerIp}\nDNS = 8.8.8.8, 8.8.4.4\n[Peer]\nPublicKey = fNMyUeM9jLy0CRJ209mBW65mXm7RM0QY6JF0SIH+2gE=\nAllowedIPs = 0.0.0.0/0, ::/0\nEndpoint = {ipAddress}\n"
+        str = f"[Interface]\nPrivateKey = {peerPrivateKey}\nAddress = {peerIp}\nDNS = {dns}\n[Peer]\nPublicKey = {serverPubKey}\nAllowedIPs = 0.0.0.0/0, ::/0\nEndpoint = {ipAddress}\n"
         with open(f"{workDir}peersConf/{peerId}.conf", "w") as fconf:
             fconf.write(str)
 
 
     def addPeerToVPN(peerId=str, peerIp=str, peerPublicKey=str):
-        cmd = f'sudo wg set wg0 peer {peerPublicKey} allowed-ips {peerIp}/32'
+        cmd = f'{sudoCmd}wg set wg0 peer {peerPublicKey} allowed-ips {peerIp}/32'
         return runTmpScript(peerId, cmd)
 
 
     def deleteConfAndKeys(peerId=str):
-        cmd = f'sudo rm {workDir}peersConf/{peerId}.conf\nsudo rm {workDir}keys/{peerId}Public.key\nsudo rm {workDir}keys/{peerId}Private.key'
+        cmd = f'{sudoCmd}rm {workDir}peersConf/{peerId}.conf\n{sudoCmd}rm {workDir}keys/{peerId}Public.key\n{sudoCmd}rm {workDir}keys/{peerId}Private.key'
         runTmpScript(peerId, cmd)
 
         return True
 
     def removePeerFromVPN(peerId=str, peerPublicKey=str):
-        cmd = f'sudo wg set wg0 peer {peerPublicKey} remove'
+        cmd = f'{sudoCmd}wg set wg0 peer {peerPublicKey} remove'
         runTmpScript(peerId, cmd)
 
         return True

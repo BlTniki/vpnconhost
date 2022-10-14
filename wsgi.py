@@ -10,6 +10,9 @@ if __name__ == "__main__":
             f.write("PUT API WORKDIR LIKE: /your/work/dir/ INSTEAD THIS MESSAGE\n")
             f.write("PUT API IPADDRESS INSTEAD THIS MESSAGE\n")
             f.write("PUT YOUR ANSWER TO: TESTMODE?(YES/NO) INSTEAD THIS MESSAGE\n")
+            f.write("PUT YOUR SUDO CMD (LIKE: SUDO, OR NOTHING IF NO SUDO REQUIRED) INSTEAD THIS MESSAGE\n")
+            f.write("PUT YOUR DNS (like: 0.0.0.0, 0.0.0.0) INSTEAD THIS MESSAGE\n")
+            f.write("PUT YOUR SERVER PUBLIC KEY INSTEAD THIS MESSAGE\n")
     else:
         auth = f.readline().strip()
         workDir = f.readline().strip()
