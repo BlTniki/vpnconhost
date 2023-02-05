@@ -11,7 +11,8 @@ except IOError as e:
                 "peerId": "foo",
                 "peerIp": "0.0.0.0",
                 "peerPrivateKey": "Private_bar",
-                "peerPublicKey": "Public_bar"
+                "peerPublicKey": "Public_bar",
+                "isActivated" : True
             }
         }
         json.dump(peers, f, indent=4)
@@ -92,3 +93,13 @@ def peerDELETE(peerId: str):
 
     saveDatabase(peers)
     return peer
+
+
+def setActivationForPeer(peerId: str, isActivated: bool):
+    peers = allPeersREAD()
+    if not peerId in peers:
+        raise Exception("Peer not found", 404)
+
+    peers[peerId]["isActivated"] = isActivated
+    saveDatabase(peers)
+    return peers[peerId]

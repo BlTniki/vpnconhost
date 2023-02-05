@@ -4,7 +4,8 @@ import DBCRUD as DB
 import CheckIsDataCorrect as Check
 import TokensManegment
 from logging.handlers import WatchedFileHandler
-from flask import Flask, jsonify, request, make_response, send_from_directory, render_template, redirect, url_for, Response
+from flask import Flask, jsonify, request, make_response, send_from_directory, render_template, redirect, url_for, \
+    Response
 
 app = Flask(__name__)
 
@@ -151,6 +152,32 @@ def deletePeer(peerId):
     return "Success", 200
 
 
+@app.route("/api/1.0/peers/activate/<peerId>", methods=["POST"])
+def activatePeer(peerId):
+    if not request.headers.get("Auth") == auth:
+        return "Incorrect auth", 401
+    try:
+        peer = DB.setActivationForPeer(peerId, True)
+    except Exception as e:
+        e = e.args
+        return e[0], e[1]
+    Conf.addPeerToVPN(peer["peerId"], peer["peerIp"], peer["peerPublicKey"])
+    return peer, 200
+
+
+@app.route("/api/1.0/peers/deactivate/<peerId>", methods=["POST"])
+def deactivatePeer(peerId):
+    if not request.headers.get("Auth") == auth:
+        return "Incorrect auth", 401
+    try:
+        peer = DB.setActivationForPeer(peerId, False)
+    except Exception as e:
+        e = e.args
+        return e[0], e[1]
+    Conf.removePeerFromVPN(peer["peerId"], peer["peerPublicKey"])
+    return peer, 200
+
+
 @app.route('/api/1.0/conf/<token>', methods=['GET'])
 def returnPeerConf(token):
     try:
@@ -159,9 +186,12 @@ def returnPeerConf(token):
         e = e.args
         return e[0], e[1]
     if testMode:
-        return "Success"
-    filename = f'{peerId}.conf'
-    directory = f'{workDir}peersConf/'
+        filename = f'test.txt'
+        directory = f'D:\\!Important\\Progrog\\Python\\vpnconservice\\peersConf'
+    else:
+        filename = f'{peerId}.conf'
+        directory = f'{workDir}peersConf/'
+
     response = make_response(send_from_directory(directory, filename, as_attachment=True))
     return response
 
