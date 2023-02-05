@@ -187,7 +187,7 @@ def returnPeerConf(token):
         return e[0], e[1]
     if testMode:
         filename = f'test.txt'
-        directory = f'D:\\!Important\\Progrog\\Python\\vpnconservice\\peersConf'
+        directory = f'D:\\!Important\\Progrog\\Python\\vpnconhost\\peersConf'
     else:
         filename = f'{peerId}.conf'
         directory = f'{workDir}peersConf/'
