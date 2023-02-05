@@ -92,6 +92,7 @@ def postPeer():
     # add peer to database
     try:
         DB.peerCREATE(peer)
+        DB.setActivationForPeer(peerId, True)
     except Exception as e:
         e = e.args
         return e[0], e[1]
