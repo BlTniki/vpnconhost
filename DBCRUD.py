@@ -97,7 +97,7 @@ def peerDELETE(peerId: str):
 
 def setActivationForPeer(peerId: str, isActivated: bool):
     peers = allPeersREAD()
-    if not peerId in peers:
+    if peerId not in peers:
         raise Exception("Peer not found", 404)
 
     peers[peerId]["isActivated"] = isActivated
