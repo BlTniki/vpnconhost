@@ -18,6 +18,7 @@ git clone https://github.com/BlTniki/vpnconhost.git
 < Вид SUDO команды (SUDO или пустоту если она не требуется)" >
 < DNS сервера (например: 0.0.0.0, 0.0.0.0)" >
 < Public key сервера >
+< Ip и порт обфускатора, если он не используется, то написать null >
 ```
 Далее запуск проекта будет следовать [этому гайду](https://www.digitalocean.com/community/tutorials/how-to-serve-flask-applications-with-gunicorn-and-nginx-on-ubuntu-20-04)
 Следует создать нового пользователя `nginx`:
