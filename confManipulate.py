@@ -9,6 +9,7 @@ with open("appconf.txt") as f:
     sudoCmd = f.readline().strip() + " ";
     dns = f.readline().strip("\n");
     serverPubKey = f.readline().strip("\n");
+    obfuscatorIp = f.readline().strip("\n");
 
 
 
@@ -50,7 +51,10 @@ else:
 
 
     def createPeerConf(peerId=str, peerIp=str, peerPrivateKey=str):
-        str = f"[Interface]\nPrivateKey = {peerPrivateKey}\nAddress = {peerIp}\nDNS = {dns}\n[Peer]\nPublicKey = {serverPubKey}\nAllowedIPs = 0.0.0.0/0, ::/0\nEndpoint = {ipAddress}\n"
+        if obfuscatorIp == "null":
+            str = f"[Interface]\nPrivateKey = {peerPrivateKey}\nAddress = {peerIp}\nDNS = {dns}\n[Peer]\nPublicKey = {serverPubKey}\nAllowedIPs = 0.0.0.0/0, ::/0\nEndpoint = {ipAddress}\n"
+        else:
+            str = f"[Interface]\nPrivateKey = {peerPrivateKey}\nAddress = {peerIp}\nDNS = {dns}\n[Peer]\nPublicKey = {serverPubKey}\nAllowedIPs = 0.0.0.0/0, ::/0\nEndpoint = {obfuscatorIp}\n"
         with open(f"{workDir}peersConf/{peerId}.conf", "w") as fconf:
             fconf.write(str)
 
