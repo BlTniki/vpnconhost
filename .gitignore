@@ -3,3 +3,4 @@ venv
 *.log
 __pycache__
 old_ver
+*.db
