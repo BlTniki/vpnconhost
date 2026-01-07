@@ -1,10 +1,5 @@
-__pycache__/
-.idea/
-*.key
-*.conf
-*.sh
-peers.json
-validTokens.json
-VPNcon.log
-appconf.txt
 venv
+.env
+*.log
+__pycache__
+old_ver

@@ -1,0 +1,806 @@
+openapi: 3.0.0
+info:
+  title: Flask API
+  version: 1.0.0
+paths:
+  /users/{telegram_id}:
+    get:
+      tags: ["Users"]
+      summary: Получить пользователя по telegram_id
+      parameters:
+        - name: telegram_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  telegram_id:
+                    type: integer
+                  telegram_nick:
+                    type: string
+                  role:
+                    type: string
+        404:
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      tags: ["Users"]
+      summary: Удалить пользователя по telegram_id
+      parameters:
+        - name: telegram_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Пользователь удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        404:
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /users/:
+    post:
+      tags: ["Users"]
+      summary: Создать нового пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                telegram_id:
+                  type: integer
+                telegram_nick:
+                  type: string
+                role:
+                  type: string
+                  nullable: true
+      responses:
+        201:
+          description: Пользователь создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        400:
+          description: telegram_id не уникален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    put:
+      tags: ["Users"]
+      summary: Обновить пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                telegram_id:
+                  type: integer
+                telegram_nick:
+                  type: string
+                role:
+                  type: string
+                  nullable: true
+      responses:
+        200:
+          description: Пользователь обновлён
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        400:
+          description: telegram_id не уникален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        404:
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /subscriptions/{subscription_id}:
+    get:
+      tags: ["Subscriptions"]
+      summary: Получить подписку по ID
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Данные подписки
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  price_in_rub:
+                    type: number
+                  allowed_peers:
+                    type: integer
+                  period:
+                    type: string
+                  role:
+                    type: string
+        404:
+          description: Подписка не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    put:
+      tags: ["Subscriptions"]
+      summary: Обновить подписку по ID
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                price_in_rub:
+                  type: number
+                allowed_peers:
+                  type: integer
+                period:
+                  type: string
+                role:
+                  type: string
+      responses:
+        200:
+          description: Подписка обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        404:
+          description: Подписка не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      tags: ["Subscriptions"]
+      summary: Удалить подписку по ID
+      parameters:
+        - name: subscription_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Подписка удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        404:
+          description: Подписка не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /subscriptions/by-role:
+    get:
+      tags: ["Subscriptions"]
+      summary: Получить подписки по роли
+      parameters:
+        - name: role
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Список подписок
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                    price_in_rub:
+                      type: number
+                    allowed_peers:
+                      type: integer
+                    period:
+                      type: string
+                    role:
+                      type: string
+        400:
+          description: Параметр role обязателен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /subscriptions/:
+    post:
+      tags: ["Subscriptions"]
+      summary: Создать новую подписку
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                price_in_rub:
+                  type: number
+                allowed_peers:
+                  type: integer
+                period:
+                  type: string
+                role:
+                  type: string
+      responses:
+        201:
+          description: Подписка создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        400:
+          description: ID не уникален или данные некорректны
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /user-subscriptions/{telegram_id}:
+    get:
+      tags: ["User Subscriptions"]
+      summary: Получить подписку пользователя по telegram_id
+      parameters:
+        - name: telegram_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Данные подписки пользователя
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    type: object
+                    properties:
+                      telegram_id:
+                        type: integer
+                      telegram_nick:
+                        type: string
+                      role:
+                        type: string
+                  subscription:
+                    type: object
+                    properties:
+                      id:
+                        type: integer
+                      price_in_rub:
+                        type: number
+                      allowed_peers:
+                        type: integer
+                      period:
+                        type: string
+                      role:
+                        type: string
+                  expiry_date:
+                    type: string
+        404:
+          description: Подписка пользователя не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    put:
+      tags: ["User Subscriptions"]
+      summary: Обновить подписку пользователя по telegram_id
+      parameters:
+        - name: telegram_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subscription_id:
+                  type: integer
+                expiry_date:
+                  type: string
+      responses:
+        200:
+          description: Подписка пользователя обновлена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        400:
+          description: Данные некорректны
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        404:
+          description: Подписка пользователя не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      tags: ["User Subscriptions"]
+      summary: Удалить подписку пользователя по telegram_id
+      parameters:
+        - name: telegram_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Подписка пользователя удалена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        404:
+          description: Подписка пользователя не найдена
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /user-subscriptions/:
+    post:
+      tags: ["User Subscriptions"]
+      summary: Создать новую подписку пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                telegram_id:
+                  type: integer
+                subscription_id:
+                  type: integer
+                expiry_date:
+                  type: string
+      responses:
+        201:
+          description: Подписка пользователя создана
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        400:
+          description: Данные некорректны
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+
+  /hosts/{host_id}:
+    get:
+      tags: ["Hosts"]
+      summary: Получить хост по ID
+      parameters:
+        - name: host_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Данные хоста
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  name:
+                    type: string
+                  ip_address:
+                    type: string
+                  port:
+                    type: integer
+                  host_password:
+                    type: string
+        404:
+          description: Хост не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    put:
+      tags: ["Hosts"]
+      summary: Обновить хост по ID
+      parameters:
+        - name: host_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                ip_address:
+                  type: string
+                port:
+                  type: integer
+                host_password:
+                  type: string
+      responses:
+        200:
+          description: Хост обновлен
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        404:
+          description: Хост не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+    delete:
+      tags: ["Hosts"]
+      summary: Удалить хост по ID
+      parameters:
+        - name: host_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        200:
+          description: Хост удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        404:
+          description: Хост не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /host/:
+    post:
+      tags: ["Hosts"]
+      summary: Создать новый хост
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                name:
+                  type: string
+                ip_address:
+                  type: string
+                port:
+                  type: integer
+                host_password:
+                  type: string
+      responses:
+        201:
+          description: Хост создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+        400:
+          description: ID не уникален или данные некорректны
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+        500:
+          description: Internal error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
