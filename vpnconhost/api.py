@@ -42,3 +42,8 @@ bp.route('/peers/<int:peer_id>/deactivate', methods=['POST'])
 def api_deactivate_peer(peer_id: int):
     _switch_peer(peer_id, False)
     return jsonify({'status': 'deactivated'})
+
+bp.route('/peers/<int:peer_id>/download', methods=['GET'])
+@auto_transaction()
+def api_download_peer(peer_id: int):
+    pass

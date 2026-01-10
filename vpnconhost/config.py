@@ -14,7 +14,13 @@ class Config:
 
     API_SECRET_WORD:str = os.getenv("API_SECRET_WORD") or "default_secret"
 
-
+    WIREGUARD_MOCK_MODE:bool = os.getenv("WIREGUARD_MOCK_MODE", "false").lower() == "true"
+    WORK_DIR:str = os.getenv("WORK_DIR") or "./"
+    WIREGUARD_ADDRESS:str = os.getenv("WIREGUARD_ADDRESS") or "0.0.0.0:0000"
+    SUDO_CMD:str = os.getenv("SUDO_CMD", "sudo") + ' '
+    WIREGUARD_DNS:str = os.getenv("WIREGUARD_DNS") or "0.0.0.0, 0.0.0.0"
+    WIREGUARD_PUBLIC_KEY:str = os.getenv("WIREGUARD_PUBLIC_KEY") or "public_key"
+    OBFUSCATOR_IP:str = os.getenv("OBFUSCATOR_IP") or "null"
 
 
 
