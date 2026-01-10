@@ -85,8 +85,8 @@ class SQLiteExecutor(DBExecutor):
             if self.cur.description:
                 return self.cur.fetchall()
             return []
-        except Exception as exc:
+        except sqlite3.IntegrityError as exc:
             # Абстрагированная проверка по имени класса
-            if exc.__class__.__name__ == "UniqueViolation":
+            if exc.sqlite_errorname.find("UNIQUE") != -1:
                 raise UniqueConstraintError() from exc
             raise
