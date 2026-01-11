@@ -34,6 +34,9 @@ if Config.WIREGUARD_MOCK_MODE:
     def deleteConfAndKeys(peerId:str):
         return True
 
+    def getPeerConfPath(peerId:str):
+        return f"./peersConf/{peerId}.conf"
+
 
 else:
     def createPeerPrivateKey(peerId:str):
@@ -82,7 +85,6 @@ else:
         except subprocess.CalledProcessError as e:
             raise RuntimeError("command '{}' return with error (code {}): {}".format(e.cmd, e.returncode, e.output))
         return stdout
-
 
     def getPeerConfPath(peerId:str):
         return f"{Config.WORK_DIR}peersConf/{peerId}.conf"
