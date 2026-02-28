@@ -1,0 +1,12 @@
+package_update: false
+package_upgrade: false
+
+write_files:
+  - path: /etc/sysctl.d/99-vpnlab.conf
+    permissions: "0644"
+    content: |
+      net.ipv4.ip_forward=1
+      net.ipv6.conf.all.forwarding=1
+
+runcmd:
+  - sysctl --system

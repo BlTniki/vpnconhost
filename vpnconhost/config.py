@@ -7,20 +7,24 @@ from typing import Any
 load_dotenv()
 
 class Config:
-    LOG_LEVEL:str = os.getenv("LOG_LEVEL") or "INFO"
-    LOG_LEVELS:str = os.getenv("LOG_LEVELS") or ""#format: myapp.db=INFO,myapp.services.auth=WARNING
+    LOG_LEVEL:str = os.getenv("LOG_LEVEL", "INFO")
+    LOG_LEVELS:str = os.getenv("LOG_LEVELS", "")#format: myapp.db=INFO,myapp.services.auth=WARNING
 
-    DB_URI:str = os.getenv("DB_URI") or ""
+    DB_URI:str = os.getenv("DB_URI", "")
 
-    API_SECRET_WORD:str = os.getenv("API_SECRET_WORD") or "default_secret"
+    API_SECRET_WORD:str = os.getenv("API_SECRET_WORD", "default_secret")
 
-    WIREGUARD_MOCK_MODE:bool = os.getenv("WIREGUARD_MOCK_MODE", "false").lower() == "true"
-    WORK_DIR:str = os.getenv("WORK_DIR") or "./"
-    WIREGUARD_ADDRESS:str = os.getenv("WIREGUARD_ADDRESS") or "0.0.0.0:0000"
-    SUDO_CMD:str = os.getenv("SUDO_CMD", "sudo") + ' '
-    WIREGUARD_DNS:str = os.getenv("WIREGUARD_DNS") or "0.0.0.0, 0.0.0.0"
-    WIREGUARD_PUBLIC_KEY:str = os.getenv("WIREGUARD_PUBLIC_KEY") or "public_key"
-    OBFUSCATOR_IP:str = os.getenv("OBFUSCATOR_IP") or "null"
+    WORK_DIR:str = os.getenv("WORK_DIR", "./")
+
+    SERVER_ADDRESS:str = os.getenv("SERVER_ADDRESS", "0.0.0.0:0000")
+
+    WG_MOCK_MODE:bool = os.getenv("WG_MOCK_MODE", "false").lower() == "true"
+    WG_EXTERNAL_IFACE:str = os.getenv("WG_EXTERNAL_IFACE", "")
+    WG_PRIVATE_KEY:str = os.getenv("WG_PRIVATE_KEY", "")
+    WG_PUBLIC_KEY:str = os.getenv("WG_PUBLIC_KEY", "public_key")
+    WG_ADDRESS:str = os.getenv("WG_ADDRESS", "10.8.0.1/24")
+    WG_DNS:str = os.getenv("WG_DNS", "0.0.0.0, 0.0.0.0")
+    WG_LISTEN_PORT:str = os.getenv("WG_LISTEN_PORT", "51820")
 
 
 
