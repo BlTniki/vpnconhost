@@ -81,6 +81,14 @@ def init_modules() -> None:
     # ===============================================
     setup_logging()
     logger = logging.getLogger(__name__)
+
+    greetings_text = """
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+@          VPNCONHOST           @
+@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+"""
+    logger.info(greetings_text)
     logger.info("Logging is set up")
 
     # ===============================================

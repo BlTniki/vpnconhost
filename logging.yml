@@ -24,7 +24,7 @@ handlers:
   file:
     class: logging.handlers.RotatingFileHandler
     level: DEBUG
-    formatter: standard
+    formatter: colored
     filename: logs/app.log
     maxBytes: 10485760
     backupCount: 5

@@ -68,6 +68,8 @@ sync_project() {
     --exclude ".pytest_cache/" \
     --exclude ".mypy_cache/" \
     --exclude ".ruff_cache/" \
+    --exclude "logs/app.log" \
+    --exclude "*.db" \
     "$SRC_DIR"/ "$APP_DIR"/
 
   # Приводим ownership к нужному
