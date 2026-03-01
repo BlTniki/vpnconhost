@@ -43,7 +43,7 @@ from functools import wraps
 import weakref
 import logging
 
-from vpnconhost.config import Config
+from config import Config
 from .db import DBExecutor, DataModel, UniqueConstraintError
 from .sqllite_db import SQLiteExecutor, validate_connection
 

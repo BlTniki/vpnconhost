@@ -6,11 +6,11 @@
 import subprocess
 import os
 
-from vpnconhost.config import Config
+from config import Config
 
 
 
-if Config.WIREGUARD_MOCK_MODE:
+if Config.WG_MOCK_MODE:
     def createPeerPrivateKey(peerId:str):
         return "private_lol_kek"
 

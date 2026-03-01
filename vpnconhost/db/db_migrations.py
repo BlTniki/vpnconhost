@@ -11,7 +11,7 @@ import sqlite3
 import os
 import importlib
 
-from vpnconhost.config import Config
+from config import Config
 
 
 logger = logging.getLogger(__name__)

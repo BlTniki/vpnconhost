@@ -4,7 +4,7 @@ import sqlite3
 
 from sqlite3 import Connection, Cursor
 
-from vpnconhost.config import Config
+from config import Config
 
 from .db import DBExecutor, UniqueConstraintError
 

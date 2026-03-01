@@ -3,12 +3,13 @@ import logging.config
 import yaml
 from dotenv import load_dotenv
 from typing import Any
+import multiprocessing
 
 load_dotenv()
 
 class Config:
     LOG_LEVEL:str = os.getenv("LOG_LEVEL", "INFO")
-    LOG_LEVELS:str = os.getenv("LOG_LEVELS", "")#format: myapp.db=INFO,myapp.services.auth=WARNING
+    LOG_LEVELS:str = os.getenv("LOG_LEVELS", "")#example: myapp.db=INFO,myapp.services.auth=WARNING
 
     DB_URI:str = os.getenv("DB_URI", "")
 
@@ -18,6 +19,7 @@ class Config:
 
     SERVER_ADDRESS:str = os.getenv("SERVER_ADDRESS", "0.0.0.0:0000")
 
+    # WIREGUARD
     WG_MOCK_MODE:bool = os.getenv("WG_MOCK_MODE", "false").lower() == "true"
     WG_EXTERNAL_IFACE:str = os.getenv("WG_EXTERNAL_IFACE", "")
     WG_PRIVATE_KEY:str = os.getenv("WG_PRIVATE_KEY", "")
@@ -25,6 +27,26 @@ class Config:
     WG_ADDRESS:str = os.getenv("WG_ADDRESS", "10.8.0.1/24")
     WG_DNS:str = os.getenv("WG_DNS", "0.0.0.0, 0.0.0.0")
     WG_LISTEN_PORT:str = os.getenv("WG_LISTEN_PORT", "51820")
+
+    # Gunicorn
+    GUNICORN_WORKERS: int = int(os.getenv("GUNICORN_WORKERS", "0"))
+    GUNICORN_THREADS: int = int(os.getenv("GUNICORN_THREADS", "0"))
+    GUNICORN_WORKER_CLASS: str = os.getenv("GUNICORN_WORKER_CLASS", "gthread")
+    GUNICORN_PRELOAD: bool = os.getenv("GUNICORN_PRELOAD", "true").lower() == "true"
+
+    GUNICORN_TIMEOUT: int = int(os.getenv("GUNICORN_TIMEOUT", "120"))
+    GUNICORN_GRACEFUL_TIMEOUT: int = int(os.getenv("GUNICORN_GRACEFUL_TIMEOUT", "30"))
+    GUNICORN_KEEPALIVE: int = int(os.getenv("GUNICORN_KEEPALIVE", "5"))
+
+    @staticmethod
+    def effective_gunicorn_workers() -> int:
+        cpu = multiprocessing.cpu_count()
+        return Config.GUNICORN_WORKERS if Config.GUNICORN_WORKERS > 0 else max(2, cpu)
+
+    @staticmethod
+    def effective_gunicorn_threads() -> int:
+        cpu = multiprocessing.cpu_count()
+        return Config.GUNICORN_THREADS if Config.GUNICORN_THREADS > 0 else max(4, cpu * 4)
 
 
 

@@ -6,7 +6,7 @@ APP_DIR="${APP_DIR:-/home/nginx/vpnconhost}"
 APP_USER="${APP_USER:-nginx}"
 APP_GROUP="${APP_GROUP:-www-data}"
 SERVICE_NAME="${SERVICE_NAME:-vpnconhost}"
-SOCK_PATH="${SOCK_PATH:-$APP_DIR/vpnconhost.sock}"
+SOCK_PATH="${SOCK_PATH:-/run/vpnconhost/vpnconhost.sock}"
 VENV_DIR="${VENV_DIR:-$APP_DIR/venv}"
 
 ENV_FILE="${ENV_FILE:-$SRC_DIR/.env}"
@@ -55,21 +55,25 @@ ensure_user() {
 sync_project() {
   mkdir -p "$APP_DIR"
 
-  # Дать ubuntu доступ на время синка с mounted-папки
-  chmod 755 /home/nginx || true
-  chown ubuntu:ubuntu "$APP_DIR"
-
-  runuser -u ubuntu -- rsync -a --delete \
+  # rsync запускаем от root, чтобы он мог удалять/перезаписывать старые файлы деплоя.
+  # При этом НЕ сохраняем owner/group/perms с source (на multipass mount они могут быть “не те”).
+  rsync -a --delete \
+    --no-owner --no-group --no-perms \
     --exclude ".git/" \
     --exclude "__pycache__/" \
     --exclude "*.pyc" \
     --exclude ".venv/" \
     --exclude "venv/" \
     --exclude "vpnconhostenv/" \
+    --exclude ".pytest_cache/" \
+    --exclude ".mypy_cache/" \
+    --exclude ".ruff_cache/" \
     "$SRC_DIR"/ "$APP_DIR"/
 
+  # Приводим ownership к нужному
   chown -R "$APP_USER":"$APP_GROUP" "$APP_DIR"
 }
+
 
 
 setup_venv_and_deps() {
@@ -84,6 +88,12 @@ setup_venv_and_deps() {
 }
 
 write_gunicorn_service() {
+  # Убедимся, что конфиг реально есть в APP_DIR (он должен приехать rsync'ом из проекта)
+  if [[ ! -f "${APP_DIR}/gunicorn.conf.py" ]]; then
+    echo "[!] ${APP_DIR}/gunicorn.conf.py not found. Add it to your project root."
+    exit 1
+  fi
+
   cat > "/etc/systemd/system/${SERVICE_NAME}.service" <<EOF
 [Unit]
 Description=Gunicorn instance to serve ${SERVICE_NAME}
@@ -94,7 +104,19 @@ User=${APP_USER}
 Group=${APP_GROUP}
 WorkingDirectory=${APP_DIR}
 Environment="PATH=${VENV_DIR}/bin"
-ExecStart=${VENV_DIR}/bin/gunicorn --workers 3 --bind unix:${SOCK_PATH} -m 007 wsgi:app
+
+# Важно: подхватываем .env из проекта (из APP_DIR, уже после rsync)
+EnvironmentFile=-${APP_DIR}/.env
+Environment="GUNICORN_BIND=unix:${SOCK_PATH}"
+
+# Создаёт /run/vpnconhost и держит его в нужных правах
+RuntimeDirectory=vpnconhost
++RuntimeDirectoryMode=0755
+
+# Чтобы сокет создавался 660 (rw для owner+group)
+UMask=0007
+ 
+ExecStart=${VENV_DIR}/bin/gunicorn -c ${APP_DIR}/gunicorn.conf.py wsgi:app
 Restart=always
 RestartSec=3
 
@@ -102,9 +124,13 @@ RestartSec=3
 WantedBy=multi-user.target
 EOF
 
+
   systemctl daemon-reload
-  systemctl enable --now "${SERVICE_NAME}.service"
+  systemctl enable "${SERVICE_NAME}.service"
+  systemctl restart "${SERVICE_NAME}.service"
+  systemctl status --no-pager "${SERVICE_NAME}.service" || true
 }
+
 
 write_nginx_site() {
   cat > "/etc/nginx/sites-available/${SERVICE_NAME}" <<EOF
@@ -146,6 +172,9 @@ setup_ufw_basic() {
 
   # SSH (Multipass обычно использует 22)
   ufw allow 22/tcp
+
+  # HTTP (nginx)
+  ufw allow 80/tcp
 
   # WireGuard порт
   local port="${WG_LISTEN_PORT:-51820}"
