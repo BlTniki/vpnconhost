@@ -4,14 +4,14 @@ import re
 
 from vpnconhost.db import auto_transaction
 from vpnconhost.db.db import UniqueConstraintError
-import vpnconhost.conf_manipulate as cm
+from vpnconhost.wg_client import WGClient
 
 from vpnconhost.exceptions import (
     EntityAlreadyExistsException,
     EntityNotExistsException,
     EntityValidationFailedException,
 )
-from .crud import get_peer, create_peer, update_peer, delete_peer
+from .crud import get_peer, create_peer, update_peer, delete_peer, get_all_peers
 from .model import Peer
 
 logger = logging.getLogger(__name__)
@@ -51,11 +51,15 @@ class PeerService(ABC):
         peer_id: str,
         peer_ip: str,
         is_activated: bool,
-    ) -> None:
+    ) -> Peer:
         pass
 
     @abstractmethod
     def get_peer(self, peer_id: str) -> Peer | None:
+        pass
+
+    @abstractmethod
+    def get_peer_conf(self, peer_id: str) -> str | None:
         pass
 
     @abstractmethod
@@ -66,6 +70,10 @@ class PeerService(ABC):
     def delete_peer(self, peer_id: str) -> None:
         pass
 
+    @abstractmethod
+    def sync_all_peers(self) -> None:
+        pass
+
 
 class PeerServiceCRUD(PeerService):
     @auto_transaction()
@@ -74,7 +82,7 @@ class PeerServiceCRUD(PeerService):
         peer_id: str,
         peer_ip: str,
         is_activated: bool,
-    ):
+    ) -> Peer:
         logger.info("Creating peer with id: %s", peer_id)
         if not is_peer_id_correct(peer_id):
             logger.warning("Peer ID validation failed: %s", peer_id)
@@ -83,8 +91,8 @@ class PeerServiceCRUD(PeerService):
             logger.warning("Peer IP validation failed: %s", peer_ip)
             raise EntityValidationFailedException(f"Peer IP '{peer_ip}' is not valid")
 
-        peer_private_key = cm.createPeerPrivateKey(peer_id)
-        peer_public_key = cm.createPeerPublicKey(peer_id)
+        peer_private_key = WGClient.create_private_key()
+        peer_public_key = WGClient.create_public_key(peer_private_key)
         peer = Peer(peer_id, peer_ip, peer_public_key, peer_private_key, is_activated)
 
         try:
@@ -99,15 +107,25 @@ class PeerServiceCRUD(PeerService):
                 f"Peer with id={peer_id} and ip={peer_ip} already exists"
             ) from exc
 
-        cm.createPeerConf(peer_id, peer_ip, peer_private_key)
         if is_activated:
-            cm.addPeerToVPN(peer_id, peer_ip, peer_public_key)
+            WGClient.add_peer_to_wg(peer_ip, peer_public_key)
         logger.info("Peer created successfully: %s", peer_id)
+
+        return peer
 
     @auto_transaction()
     def get_peer(self, peer_id: str) -> Peer | None:
         logger.debug("Retrieving peer with id: %s", peer_id)
         return get_peer(peer_id)
+
+    @auto_transaction()
+    def get_peer_conf(self, peer_id: str) -> str | None:
+        logger.debug("Retrieving peer conf with id: %s", peer_id)
+        peer = get_peer(peer_id)
+        if peer is None:
+            logger.warning("Peer not found for conf: %s", peer_id)
+            raise EntityNotExistsException(f"Peer with id={peer_id} not found")
+        return WGClient.get_peer_conf(peer.peer_ip, peer.peer_private_key)
 
     @auto_transaction()
     def switch_peer(self, peer_id: str, is_activated: bool) -> None:
@@ -125,9 +143,9 @@ class PeerServiceCRUD(PeerService):
         )
         update_peer(peer)
         if is_activated:
-            cm.addPeerToVPN(peer_id, peer.peer_ip, peer.peer_public_key)
+            WGClient.add_peer_to_wg(peer.peer_ip, peer.peer_public_key)
         else:
-            cm.removePeerFromVPN(peer_id, peer.peer_public_key)
+            WGClient.remove_peer_from_wg(peer.peer_public_key)
         logger.info("Peer switched successfully: %s", peer_id)
 
     @auto_transaction()
@@ -138,6 +156,17 @@ class PeerServiceCRUD(PeerService):
             logger.warning("Peer not found for update: %s", peer_id)
             raise EntityNotExistsException(f"Peer with id={peer_id} not found")
         delete_peer(peer_id)
-        cm.removePeerFromVPN(peer_id, peer.peer_public_key)
-        cm.deleteConfAndKeys(peer_id)
+        WGClient.remove_peer_from_wg(peer.peer_public_key)
         logger.info("Peer deleted successfully: %s", peer_id)
+
+    @auto_transaction()
+    def sync_all_peers(self) -> None:
+        logger.info("Syncing all peers from database to WireGuard")
+        peers = get_all_peers()
+        synced_count = 0
+        for peer in peers:
+            if peer.is_activated:
+                WGClient.add_peer_to_wg(peer.peer_ip, peer.peer_public_key)
+                synced_count += 1
+                logger.debug("Synced peer: %s", peer.peer_id)
+        logger.info("Sync completed: %d peers synced to WireGuard", synced_count)

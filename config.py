@@ -20,6 +20,7 @@ class Config:
     SERVER_ADDRESS:str = os.getenv("SERVER_ADDRESS", "0.0.0.0:0000")
 
     # WIREGUARD
+    SUDO_CMD:str = os.getenv("SUDO_CMD", "sudo")
     WG_MOCK_MODE:bool = os.getenv("WG_MOCK_MODE", "false").lower() == "true"
     WG_EXTERNAL_IFACE:str = os.getenv("WG_EXTERNAL_IFACE", "")
     WG_PRIVATE_KEY:str = os.getenv("WG_PRIVATE_KEY", "")

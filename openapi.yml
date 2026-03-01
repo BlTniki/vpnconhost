@@ -1,516 +1,156 @@
 openapi: 3.0.0
 info:
-  title: Flask API
+  title: VPN Peer Management API
   version: 1.0.0
+  description: API for managing WireGuard VPN peers
 paths:
-  /users/{telegram_id}:
+  /peers/{peer_id}:
     get:
-      tags: ["Users"]
-      summary: Получить пользователя по telegram_id
+      tags: ["Peers"]
+      summary: Получить информацию о пире по ID
       parameters:
-        - name: telegram_id
+        - name: peer_id
           in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Данные пользователя
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  telegram_id:
-                    type: integer
-                  telegram_nick:
-                    type: string
-                  role:
-                    type: string
-        404:
-          description: Пользователь не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    delete:
-      tags: ["Users"]
-      summary: Удалить пользователя по telegram_id
-      parameters:
-        - name: telegram_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Пользователь удален
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        404:
-          description: Пользователь не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /users/:
-    post:
-      tags: ["Users"]
-      summary: Создать нового пользователя
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                telegram_id:
-                  type: integer
-                telegram_nick:
-                  type: string
-                role:
-                  type: string
-                  nullable: true
-      responses:
-        201:
-          description: Пользователь создан
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        400:
-          description: telegram_id не уникален
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    put:
-      tags: ["Users"]
-      summary: Обновить пользователя
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                telegram_id:
-                  type: integer
-                telegram_nick:
-                  type: string
-                role:
-                  type: string
-                  nullable: true
-      responses:
-        200:
-          description: Пользователь обновлён
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        400:
-          description: telegram_id не уникален
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        404:
-          description: Пользователь не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /subscriptions/{subscription_id}:
-    get:
-      tags: ["Subscriptions"]
-      summary: Получить подписку по ID
-      parameters:
-        - name: subscription_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Данные подписки
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  price_in_rub:
-                    type: number
-                  allowed_peers:
-                    type: integer
-                  period:
-                    type: string
-                  role:
-                    type: string
-        404:
-          description: Подписка не найдена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    put:
-      tags: ["Subscriptions"]
-      summary: Обновить подписку по ID
-      parameters:
-        - name: subscription_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                price_in_rub:
-                  type: number
-                allowed_peers:
-                  type: integer
-                period:
-                  type: string
-                role:
-                  type: string
-      responses:
-        200:
-          description: Подписка обновлена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        404:
-          description: Подписка не найдена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    delete:
-      tags: ["Subscriptions"]
-      summary: Удалить подписку по ID
-      parameters:
-        - name: subscription_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Подписка удалена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        404:
-          description: Подписка не найдена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /subscriptions/by-role:
-    get:
-      tags: ["Subscriptions"]
-      summary: Получить подписки по роли
-      parameters:
-        - name: role
-          in: query
           required: true
           schema:
             type: string
+          description: Уникальный идентификатор пира
       responses:
         200:
-          description: Список подписок
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  type: object
-                  properties:
-                    id:
-                      type: integer
-                    price_in_rub:
-                      type: number
-                    allowed_peers:
-                      type: integer
-                    period:
-                      type: string
-                    role:
-                      type: string
-        400:
-          description: Параметр role обязателен
+          description: Информация о пире успешно получена
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /subscriptions/:
-    post:
-      tags: ["Subscriptions"]
-      summary: Создать новую подписку
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                price_in_rub:
-                  type: number
-                allowed_peers:
-                  type: integer
-                period:
-                  type: string
-                role:
-                  type: string
-      responses:
-        201:
-          description: Подписка создана
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        400:
-          description: ID не уникален или данные некорректны
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-
-  /user-subscriptions/{telegram_id}:
-    get:
-      tags: ["User Subscriptions"]
-      summary: Получить подписку пользователя по telegram_id
-      parameters:
-        - name: telegram_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Данные подписки пользователя
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  user:
+                  peer:
                     type: object
                     properties:
-                      telegram_id:
-                        type: integer
-                      telegram_nick:
+                      peer_id:
                         type: string
-                      role:
+                        description: Уникальный идентификатор пира
+                      peer_ip:
                         type: string
-                  subscription:
+                        description: IP-адрес пира
+                      peer_public_key:
+                        type: string
+                        description: Публичный ключ пира
+                      peer_private_key:
+                        type: string
+                        description: Приватный ключ пира
+                      is_activated:
+                        type: boolean
+                        description: Статус активации пира
+        404:
+          description: Пир не найден
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                    example: "Not Found"
+                  message:
+                    type: string
+                    example: "Peer with id=peer123 not found"
+    delete:
+      tags: ["Peers"]
+      summary: Удалить пира по ID
+      parameters:
+        - name: peer_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор пира
+      responses:
+        200:
+          description: Пир успешно удален
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Peer deleted successfully"
+                  peer_id:
+                    type: string
+                    example: "peer123"
+
+  /peers/sync:
+    post:
+      tags: ["Peers"]
+      summary: Синхронизировать всех пиров из БД в WireGuard
+      description: Добавляет всех активированных пиров из базы данных в WireGuard конфигурацию
+      responses:
+        200:
+          description: Все пиры успешно синхронизированы
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "All peers synced to WireGuard successfully"
+
+  /peers:
+    post:
+      tags: ["Peers"]
+      summary: Создать нового пира
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - peer_id
+                - peer_ip
+              properties:
+                peer_id:
+                  type: string
+                  description: Уникальный идентификатор пира
+                peer_ip:
+                  type: string
+                  description: IP-адрес пира
+                is_activated:
+                  type: boolean
+                  description: Статус активации пира (по умолчанию false)
+                  default: false
+      responses:
+        201:
+          description: Пир успешно создан
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Peer created successfully"
+                  peer:
                     type: object
                     properties:
-                      id:
-                        type: integer
-                      price_in_rub:
-                        type: number
-                      allowed_peers:
-                        type: integer
-                      period:
+                      peer_id:
                         type: string
-                      role:
+                        description: Уникальный идентификатор пира
+                      peer_ip:
                         type: string
-                  expiry_date:
-                    type: string
-        404:
-          description: Подписка пользователя не найдена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    put:
-      tags: ["User Subscriptions"]
-      summary: Обновить подписку пользователя по telegram_id
-      parameters:
-        - name: telegram_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                subscription_id:
-                  type: integer
-                expiry_date:
-                  type: string
-      responses:
-        200:
-          description: Подписка пользователя обновлена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
+                        description: IP-адрес пира
+                      peer_public_key:
+                        type: string
+                        description: Публичный ключ пира
+                      peer_private_key:
+                        type: string
+                        description: Приватный ключ пира
+                      is_activated:
+                        type: boolean
+                        description: Статус активации пира
         400:
-          description: Данные некорректны
+          description: Ошибка валидации данных
           content:
             application/json:
               schema:
@@ -518,138 +158,103 @@ paths:
                 properties:
                   error:
                     type: string
-        404:
-          description: Подписка пользователя не найдена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                    example: "Validation Failed"
+                  message:
                     type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    delete:
-      tags: ["User Subscriptions"]
-      summary: Удалить подписку пользователя по telegram_id
-      parameters:
-        - name: telegram_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Подписка пользователя удалена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        404:
-          description: Подписка пользователя не найдена
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                    example: "Fields peer_id and peer_ip are required"
 
-  /user-subscriptions/:
+  /peers/{peer_id}/activate:
     post:
-      tags: ["User Subscriptions"]
-      summary: Создать новую подписку пользователя
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                telegram_id:
-                  type: integer
-                subscription_id:
-                  type: integer
-                expiry_date:
-                  type: string
+      tags: ["Peers"]
+      summary: Активировать пира
+      parameters:
+        - name: peer_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор пира
       responses:
-        201:
-          description: Подписка пользователя создана
+        200:
+          description: Пир успешно активирован
           content:
             application/json:
               schema:
                 type: object
                 properties:
-                  status:
+                  message:
                     type: string
-        400:
-          description: Данные некорректны
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                    example: "Peer activated successfully"
+                  peer_id:
                     type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                    example: "peer123"
+                  is_activated:
+                    type: boolean
+                    example: true
 
-  /hosts/{host_id}:
+  /peers/{peer_id}/deactivate:
+    post:
+      tags: ["Peers"]
+      summary: Деактивировать пира
+      parameters:
+        - name: peer_id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Уникальный идентификатор пира
+      responses:
+        200:
+          description: Пир успешно деактивирован
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "Peer deactivated successfully"
+                  peer_id:
+                    type: string
+                    example: "peer123"
+                  is_activated:
+                    type: boolean
+                    example: false
+
+  /peers/{peer_id}/download:
     get:
-      tags: ["Hosts"]
-      summary: Получить хост по ID
+      tags: ["Peers"]
+      summary: Скачать конфигурацию пира
+      description: Возвращает конфигурационный файл WireGuard для пира
       parameters:
-        - name: host_id
+        - name: peer_id
           in: path
           required: true
           schema:
-            type: integer
+            type: string
+          description: Уникальный идентификатор пира
       responses:
         200:
-          description: Данные хоста
+          description: Конфигурация пира успешно получена
           content:
-            application/json:
+            text/plain:
               schema:
-                type: object
-                properties:
-                  id:
-                    type: integer
-                  name:
-                    type: string
-                  ip_address:
-                    type: string
-                  port:
-                    type: integer
-                  host_password:
-                    type: string
+                type: string
+                example: |
+                  [Interface]
+                  PrivateKey = ...
+                  Address = ...
+                  
+                  [Peer]
+                  PublicKey = ...
+                  Endpoint = ...
+          headers:
+            Content-Disposition:
+              schema:
+                type: string
+                example: "attachment; filename=peer123.conf"
         404:
-          description: Хост не найден
+          description: Конфигурация пира не найдена
           content:
             application/json:
               schema:
@@ -657,150 +262,7 @@ paths:
                 properties:
                   error:
                     type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
+                    example: "Not Found"
+                  message:
                     type: string
-    put:
-      tags: ["Hosts"]
-      summary: Обновить хост по ID
-      parameters:
-        - name: host_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                ip_address:
-                  type: string
-                port:
-                  type: integer
-                host_password:
-                  type: string
-      responses:
-        200:
-          description: Хост обновлен
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        404:
-          description: Хост не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-    delete:
-      tags: ["Hosts"]
-      summary: Удалить хост по ID
-      parameters:
-        - name: host_id
-          in: path
-          required: true
-          schema:
-            type: integer
-      responses:
-        200:
-          description: Хост удален
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        404:
-          description: Хост не найден
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-  /host/:
-    post:
-      tags: ["Hosts"]
-      summary: Создать новый хост
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                id:
-                  type: integer
-                name:
-                  type: string
-                ip_address:
-                  type: string
-                port:
-                  type: integer
-                host_password:
-                  type: string
-      responses:
-        201:
-          description: Хост создан
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status:
-                    type: string
-        400:
-          description: ID не уникален или данные некорректны
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
-        500:
-          description: Internal error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  error:
-                    type: string
+                    example: "Configuration for peer with id=peer123 not found"

@@ -71,6 +71,17 @@ def update_peer(peer: Peer) -> None:
 
 
 @auto_transaction()
+def get_all_peers() -> list[Peer]:
+    executor = get_db_executor()
+    result = executor.execute("SELECT * FROM peers")
+    if not result:
+        logger.debug("No peers found in database")
+        return []
+    logger.debug("Found %d peers in database", len(result))
+    return [Peer.from_raw(row) for row in result]
+
+
+@auto_transaction()
 def delete_peer(peer_id: str) -> None:
     executor = get_db_executor()
     query = "DELETE FROM peers WHERE peer_id = :peer_id"
