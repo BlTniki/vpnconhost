@@ -63,8 +63,6 @@ class WGClient:
 
     @staticmethod
     def get_peer_conf(peer_ip: str, private_key: str) -> str:
-        endpoint = Config.SERVER_ADDRESS
-
         text = (
             "[Interface]\n"
             f"PrivateKey = {private_key}\n"
@@ -73,7 +71,7 @@ class WGClient:
             "[Peer]\n"
             f"PublicKey = {Config.WG_PUBLIC_KEY}\n"
             "AllowedIPs = 0.0.0.0/0, ::/0\n"
-            f"Endpoint = {endpoint}\n"
+            f"Endpoint = {Config.WG_SERVER_ADDRESS}:{Config.WG_LISTEN_PORT}\n"
         )
         return text
 

@@ -17,7 +17,6 @@ class Config:
 
     WORK_DIR:str = os.getenv("WORK_DIR", "./")
 
-    SERVER_ADDRESS:str = os.getenv("SERVER_ADDRESS", "0.0.0.0:0000")
 
     # WIREGUARD
     SUDO_CMD:str = os.getenv("SUDO_CMD", "/usr/bin/sudo")
@@ -27,6 +26,7 @@ class Config:
     WG_PRIVATE_KEY:str = os.getenv("WG_PRIVATE_KEY", "")
     WG_PUBLIC_KEY:str = os.getenv("WG_PUBLIC_KEY", "public_key")
     WG_ADDRESS:str = os.getenv("WG_ADDRESS", "10.8.0.1/24")
+    WG_SERVER_ADDRESS:str = os.getenv("WG_SERVER_ADDRESS", "0.0.0.0")
     WG_DNS:str = os.getenv("WG_DNS", "0.0.0.0, 0.0.0.0")
     WG_LISTEN_PORT:str = os.getenv("WG_LISTEN_PORT", "51820")
 
